@@ -1,20 +1,26 @@
-# Builds a Docker image with Python3, MOAB/pyMOAB, CGNS/pyCGNS
-# with parallel suppport.
+# Builds a Docker image with Python3, MOAB/pyMOAB, CGNS/pyCGNS, and meshio.
+# CGNS and MOAB are compiled with OpenMPI v2.x for parallel support.
+# In addition, OpenMPI v2 is patched to work with dlopen.
 #
 # Authors:
 # Xiangmin Jiao <xmjiao@gmail.com>
 
-FROM x11vnc/desktop:latest
+FROM x11vnc/desktop:17.10
 LABEL maintainer "Xiangmin Jiao <xmjiao@gmail.com>"
 
 USER root
 WORKDIR /tmp
 
+ADD image/home $DOCKER_HOME
+ADD image/bin /tmp
+
 # Install system packages
+# Use fix_ompi_dlopen.sh to fix dlopen issue with OpenMPI v2.x
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         build-essential gfortran cmake wget \
         automake autogen autoconf libtool \
+        patchelf \
         openmpi-bin libopenmpi-dev \
         libhdf5-100 libhdf5-dev hdf5-tools \
         libhdf5-openmpi-100 libhdf5-openmpi-dev \
@@ -39,6 +45,7 @@ RUN apt-get update && \
         nose \
         numpy \
         mpi4py \
+        meshio \
         \
         ipython \
         jupyter \
@@ -62,10 +69,11 @@ RUN apt-get update && \
         calico-spell-check && \
     \
     curl -L https://github.com/hbin/top-programming-fonts/raw/master/install.sh | bash && \
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
     \
     touch $DOCKER_HOME/.log/jupyter.log && \
     chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME && \
+    \
+    /tmp/fix_ompi_dlopen.sh && \
     \
     mkdir -p /usr/lib/hdf5-openmpi && \
     ln -s -f /usr/include/hdf5/openmpi /usr/lib/hdf5-openmpi/include && \
@@ -75,7 +83,7 @@ RUN apt-get update && \
     ln -s -f /usr/include/hdf5/serial /usr/lib/hdf5-serial/include && \
     ln -s -f /usr/lib/x86_64-linux-gnu/hdf5/serial /usr/lib/hdf5-serial/lib && \
     \
-    rm -rf /var/lib/apt/lists/* /tmp/*
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Install CGNS from source with parallel enabled
 RUN cd /tmp && \
@@ -130,8 +138,6 @@ RUN cd /tmp && \
     cd pymoab && \
     python3 setup.py install && \
     rm -rf /tmp/moab
-
-ADD image/home $DOCKER_HOME
 
 ########################################################
 # Customization for user
