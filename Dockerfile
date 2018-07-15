@@ -28,7 +28,8 @@ USER root
 WORKDIR /tmp
 
 # Install CalculiX, along with FreeCAD and Gmsh
-RUN apt-get update && \
+RUN add-apt-repository ppa:freecad-maintainers/freecad-stable && \
+    apt-get update && \
     apt-get install -y --no-install-recommends \
         calculix-ccx \
         freecad \
