@@ -1,4 +1,5 @@
-# Builds a Docker image with DataTransferKit on top of meshdb.
+# Builds a Docker image with DataTransferKit and PyDTK.
+# It requires meshdb.
 #
 # Authors:
 # Xiangmin Jiao <xmjiao@gmail.com>
@@ -75,6 +76,16 @@ RUN apt-get update && \
     make install && \
     \
     rm -rf /tmp/*
+
+ARG BB_TOKEN
+
+# Check out and install pydtk2
+# make sure to add env CC=mpicxx
+RUN git clone --depth=1 https://xmjiao:${BB_TOKEN}@bitbucket.org/qiaoc/pydtk2.git 2> /dev/null && \
+    cd pydtk2 && \
+    perl -e 's/https:\/\/[\w:\.]+@([\w\.]+)\//git\@$1:/' -p -i .git/config && \
+    env CC=mpicxx python3 setup.py install && \
+    cd .. && rm -rf pydtk2
 
 WORKDIR $DOCKER_HOME
 USER root
