@@ -14,10 +14,12 @@ RUN apt-get update && \
         gmsh && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
+ARG BB_TOKEN
+
 # Install libcalculix and pyccx
 RUN git clone --depth=1 \
     https://xmjiao:${BB_TOKEN}@bitbucket.org/qiaoc/libcalculix.git \
-    ./libcalculix && \
+    ./libcalculix 2> /dev/null && \
     cd libcalculix && \
     perl -e 's/https:\/\/[\w:\.]+@([\w\.]+)\//git\@$1:/' -p -i .git/config && \
     make && make install && \
@@ -25,7 +27,7 @@ RUN git clone --depth=1 \
     \
     git clone --depth=1 \
     https://xmjiao:${BB_TOKEN}@bitbucket.org/qiaoc/pyccx.git \
-    ./pyccx && \
+    ./pyccx 2> /dev/null && \
     perl -e 's/https:\/\/[\w:\.]+@([\w\.]+)\//git\@$1:/' -p -i .git/config && \
     cd pyccx && \
     python3 setup.py install && \
