@@ -1,8 +1,5 @@
 # Builds a Docker image with DataTransferKit and PyDTK.
 # It requires meshdb.
-#
-# Authors:
-# Xiangmin Jiao <xmjiao@gmail.com>
 
 # First, create an intermediate image to checkout git repository
 FROM unifem/cht-coupler:meshdb as intermediate
