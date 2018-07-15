@@ -1,4 +1,4 @@
-# Builds a Docker image for CalculiX and PyCCX
+# Builds a Docker image for CalculiX and PyCCX, with FreeCAD and gmsh
 
 # First, create an intermediate image to checkout git repository
 FROM unifem/cht-coupler:mapper as intermediate
@@ -10,9 +10,9 @@ ARG BB_TOKEN
 
 RUN git clone --depth=1 \
     https://${BB_TOKEN}@bitbucket.org/qiaoc/libcalculix.git \
-        apps/libccx 2> /dev/null && \
+        apps/libcalculix 2> /dev/null && \
     perl -e 's/https:\/\/[\w:\.]+@([\w\.]+)\//git\@$1:/' -p -i \
-        apps/libccx/.git/config && \
+        apps/libcalculix/.git/config && \
     \
     git clone --depth=1 \
     https://${BB_TOKEN}@bitbucket.org/qiaoc/pyccx.git \
@@ -27,19 +27,18 @@ LABEL maintainer "Xiangmin Jiao <xmjiao@gmail.com>"
 USER root
 WORKDIR /tmp
 
-# Install CalculiX, along with FreeCAD and Gmsh
+# Install FreeCAD and Gmsh
 RUN add-apt-repository ppa:freecad-maintainers/freecad-stable && \
     apt-get update && \
     apt-get install -y --no-install-recommends \
-        calculix-ccx \
         freecad \
         gmsh && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 COPY --from=intermediate /tmp/apps .
 
-# Install libccx and pyccx
-RUN cd libccx && \
+# Install libcalculix and pyccx
+RUN cd libcalculix && \
     make && make install && \
     cd .. && \
     \
