@@ -10,9 +10,9 @@ ARG BB_TOKEN
 
 RUN git clone --depth=1 \
     https://${BB_TOKEN}@bitbucket.org/qiaoc/libcalculix.git \
-        apps/libcalculix 2> /dev/null && \
+        apps/libccx 2> /dev/null && \
     perl -e 's/https:\/\/[\w:\.]+@([\w\.]+)\//git\@$1:/' -p -i \
-        apps/libcalculix/.git/config && \
+        apps/libccx/.git/config && \
     \
     git clone --depth=1 \
     https://${BB_TOKEN}@bitbucket.org/qiaoc/pyccx.git \
@@ -27,19 +27,16 @@ LABEL maintainer "Xiangmin Jiao <xmjiao@gmail.com>"
 USER root
 WORKDIR /tmp
 
-# Install CalculiX, along with FreeCAD and Gmsh
-RUN add-apt-repository ppa:freecad-maintainers/freecad-stable && \
-    apt-get update && \
+# Install CalculiX
+RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-        calculix-ccx \
-        freecad \
-        gmsh && \
+        calculix-ccx && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 COPY --from=intermediate /tmp/apps .
 
-# Install libcalculix and pyccx
-RUN cd libcalculix && \
+# Install libccx and pyccx
+RUN cd libccx && \
     make && make install && \
     cd .. && \
     \
