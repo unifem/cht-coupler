@@ -4,6 +4,23 @@
 # Authors:
 # Xiangmin Jiao <xmjiao@gmail.com>
 
+# First, create an intermediate image to checkout git repository
+FROM unifem/cht-coupler:meshdb as intermediate
+LABEL maintainer "Xiangmin Jiao <xmjiao@gmail.com>"
+
+USER root
+WORKDIR /tmp
+
+ARG BB_TOKEN
+
+# Check out pydtk2 securely
+RUN git clone --depth=1 \
+        https://xmjiao:${BB_TOKEN}@bitbucket.org/qiaoc/pydtk2.git \
+        apps/pydtk2 2> /dev/null && \
+    perl -e 's/https:\/\/[\w:\.]+@([\w\.]+)\//git\@$1:/' -p -i \
+        apps/pydtk2/.git/config
+
+# Perform a second-stage by copying from intermediate image
 FROM unifem/cht-coupler:meshdb
 LABEL maintainer "Xiangmin Jiao <xmjiao@gmail.com>"
 
@@ -77,13 +94,11 @@ RUN apt-get update && \
     \
     rm -rf /tmp/*
 
-ARG BB_TOKEN
+COPY --from=intermediate /tmp/apps .
 
-# Check out and install pydtk2
+# Install pydtk2
 # make sure to add env CC=mpicxx
-RUN git clone --depth=1 https://xmjiao:${BB_TOKEN}@bitbucket.org/qiaoc/pydtk2.git 2> /dev/null && \
-    cd pydtk2 && \
-    perl -e 's/https:\/\/[\w:\.]+@([\w\.]+)\//git\@$1:/' -p -i .git/config && \
+RUN cd pydtk2 && \
     env CC=mpicxx python3 setup.py install && \
     cd .. && rm -rf pydtk2
 
