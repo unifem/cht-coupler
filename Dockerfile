@@ -10,9 +10,9 @@ ARG BB_TOKEN
 
 RUN git clone --depth=1 \
     https://${BB_TOKEN}@bitbucket.org/qiaoc/libcalculix.git \
-        apps/libcalculix 2> /dev/null && \
+        apps/libccx 2> /dev/null && \
     perl -e 's/https:\/\/[\w:\.]+@([\w\.]+)\//git\@$1:/' -p -i \
-        apps/libcalculix/.git/config && \
+        apps/libccx/.git/config && \
     \
     git clone --depth=1 \
     https://${BB_TOKEN}@bitbucket.org/qiaoc/pyccx.git \
@@ -38,8 +38,8 @@ RUN add-apt-repository ppa:freecad-maintainers/freecad-stable && \
 
 COPY --from=intermediate /tmp/apps .
 
-# Install libcalculix and pyccx
-RUN cd libcalculix && \
+# Install libccx and pyccx
+RUN cd libccx && \
     make && make install && \
     cd .. && \
     \
