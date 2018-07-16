@@ -6,20 +6,14 @@ FROM unifem/cht-coupler:ovt-frw as intermediate
 USER root
 WORKDIR /tmp
 
-ARG SSH_PRIVATE_KEY
+ARG BB_TOKEN
 
 # checkout pyovcg
-RUN mkdir -p /root/.ssh && \
-    echo "${SSH_PRIVATE_KEY}" > /root/.ssh/id_rsa && \
-    chmod go-r /root/.ssh/id_rsa && \
-    touch /root/.ssh/known_hosts && \
-    ssh-keyscan bitbucket.org >> /root/.ssh/known_hosts && \
-    \
-    git clone --depth=1 \
-       git@bitbucket.org:qiaoc/pyovcg.git \
-       ./apps/pyovcg && \
-    \
-    rm /root/.ssh/id_rsa
+RUN git clone --depth=1 \
+    https://${BB_TOKEN}@bitbucket.org/qiaoc/pyovcg.git \
+        apps/pyovcg 2> /dev/null && \
+    perl -e 's/https:\/\/[\w:\.]+@([\w\.]+)\//git\@$1:/' -p -i \
+        apps/pyovcg/.git/config
 
 # Perform a second-stage by copying from intermediate image
 FROM unifem/cht-coupler:ovt-frw
