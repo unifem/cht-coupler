@@ -35,13 +35,14 @@ RUN cd $CG && git pull https master && \
     echo "export PATH=$CGBUILDPREFIX/bin:\$PATH:." >> \
         $DOCKER_HOME/.profile
 
+USER root
+
 # Copy git repository from intermediate image
 COPY --from=intermediate /tmp/apps .
 
-# Build pyovcg
+# Install pyovcg
 RUN cd pyovcg && \
-    sudo python3 setup.py install && \
+    python3 setup.py install && \
     cd .. && rm -rf pyovcg
 
 WORKDIR $DOCKER_HOME
-USER root
