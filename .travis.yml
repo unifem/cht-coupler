@@ -10,5 +10,5 @@ before_script:
 
 script:
   - './ci-util/build-docker.sh : :
-         --build-arg SSH_PRIVATE_KEY=$SSH_PRIVATE_KEY --squash &&
+         --build-arg SSH_PRIVATE_KEY="$SSH_PRIVATE_KEY" --squash &&
      ./ci-util/trigger-via-api.sh'
