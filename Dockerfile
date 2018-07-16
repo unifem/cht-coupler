@@ -1,7 +1,7 @@
-# Builds a Docker image for OpenFOAM and CalculiX
+# Builds a Docker image for OpenFOAM and ParaView
 
 # First, create an intermediate image to checkout git repository
-FROM unifem/cht-coupler:frw-ccx as intermediate
+FROM unifem/cht-coupler:base as intermediate
 
 USER root
 WORKDIR /tmp
@@ -16,14 +16,13 @@ RUN git clone --depth=1 \
         apps/libofm/.git/config
 
 # Perform a second-stage by copying from intermediate image
-FROM unifem/cht-coupler:frw-ccx
+FROM unifem/cht-coupler:base
 LABEL maintainer "Xiangmin Jiao <xmjiao@gmail.com>"
 
 USER root
 WORKDIR /tmp
 
 # Install OpenFOAM 5.0 (https://openfoam.org/download/5-0-ubuntu/),
-# Calculix, along with FreeCAD and Gmsh
 RUN add-apt-repository http://dl.openfoam.org/ubuntu && \
     sh -c "curl -s http://dl.openfoam.org/gpg.key | apt-key add -" && \
     apt-get update && \
