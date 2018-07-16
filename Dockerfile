@@ -40,8 +40,8 @@ COPY --from=intermediate /tmp/apps .
 
 # Build pyovcg
 RUN cd pyovcg && \
-    python3 setup.py install && \
-    rm -rf pyovcg
+    sudo python3 setup.py install && \
+    cd .. && rm -rf pyovcg
 
 WORKDIR $DOCKER_HOME
 USER root
