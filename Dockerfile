@@ -40,7 +40,7 @@ RUN echo "source /opt/openfoam5/etc/bashrc" >> $DOCKER_HOME/.profile && \
 COPY --from=intermediate /tmp/apps .
 
 # Build libofm and pyofm
-RUN echo ". /opt/openfoam5/etc/bashrc\n./configure --python\n./Allwmake\n" > \
+RUN echo ". /opt/openfoam5/etc/bashrc\n./configure --python --system\n./Allwmake\n" > \
         libofm/install.sh && \
     cd libofm && \
     bash ./install.sh && \
