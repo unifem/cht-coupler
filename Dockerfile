@@ -69,7 +69,16 @@ RUN apt-get update && \
         libparmetis4.0 libmetis-dev libparmetis-dev && \
     apt-get clean && \
     apt-get autoremove && \
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+    \
+    pip3 install -U \
+          sympy \
+          scipy \
+          sphinx \
+          \
+          ply \
+          pytest \
+          six && \
+      rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 ENV PETSC_DIR=/usr/lib/petscdir/${PETSC_VERSION}/x86_64-linux-gnu-real
 ENV SLEPC_DIR=/usr/lib/slepcdir/${SLEPC_VERSION}/x86_64-linux-gnu-real
