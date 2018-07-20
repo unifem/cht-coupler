@@ -34,6 +34,7 @@ RUN apt-get update && \
         bsdtar \
         rsync \
         gdb \
+        pkg-config \
         ccache \
         \
         libscalapack-openmpi1 libscalapack-mpi-dev \
@@ -47,7 +48,6 @@ RUN apt-get update && \
         libpetsc${PETSC_VERSION}-dev \
         libslepc${SLEPC_VERSION}-dev \
         \
-        git \
         git-lfs \
         libnss3 \
         imagemagick \
@@ -71,13 +71,17 @@ RUN apt-get update && \
     apt-get autoremove && \
     \
     pip3 install -U \
+          matplotlib \
           sympy \
           scipy \
           sphinx \
           \
+          pybind11 \
           ply \
           pytest \
-          six && \
+          six \
+          petsc4py \
+          slepc4py && \
       rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 ENV PETSC_DIR=/usr/lib/petscdir/${PETSC_VERSION}/x86_64-linux-gnu-real
