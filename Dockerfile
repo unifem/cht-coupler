@@ -24,6 +24,8 @@ WORKDIR /tmp
 # Install PETSC and SLEPC
 ENV PETSC_VERSION=3.7.6
 ENV SLEPC_VERSION=3.7.4
+ENV PETSC4PY_VERSION=3.7.0
+ENV SLEPC4PY_VERSION=3.7.0
 
 # Install system packages
 RUN apt-get update && \
@@ -45,8 +47,10 @@ RUN apt-get update && \
         libptscotch-dev \
         libmumps-dev \
         \
-        libpetsc${PETSC_VERSION}-dev python3-petsc4py \
-        libslepc${SLEPC_VERSION}-dev python3-slepc4py \
+        libpetsc${PETSC_VERSION}-dev \
+        libslepc${SLEPC_VERSION}-dev \
+        python3-petsc4py="${PETSC4PY_VERSION}*" \
+        python3-slepc4py="${SLEPC4PY_VERSION}*" && \
         \
         git-lfs \
         libnss3 \
