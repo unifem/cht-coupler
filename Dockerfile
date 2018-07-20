@@ -45,8 +45,8 @@ RUN apt-get update && \
         libptscotch-dev \
         libmumps-dev \
         \
-        libpetsc${PETSC_VERSION}-dev \
-        libslepc${SLEPC_VERSION}-dev \
+        libpetsc${PETSC_VERSION}-dev python3-petsc4py \
+        libslepc${SLEPC_VERSION}-dev python3-slepc4py \
         \
         git-lfs \
         libnss3 \
@@ -79,9 +79,7 @@ RUN apt-get update && \
           pybind11 \
           ply \
           pytest \
-          six \
-          petsc4py \
-          slepc4py && \
+          six && \
       rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 ENV PETSC_DIR=/usr/lib/petscdir/${PETSC_VERSION}/x86_64-linux-gnu-real
