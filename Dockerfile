@@ -50,7 +50,7 @@ RUN apt-get update && \
         libpetsc${PETSC_VERSION}-dev \
         libslepc${SLEPC_VERSION}-dev \
         python3-petsc4py="${PETSC4PY_VERSION}*" \
-        python3-slepc4py="${SLEPC4PY_VERSION}*" && \
+        python3-slepc4py="${SLEPC4PY_VERSION}*" \
         \
         git-lfs \
         libnss3 \
