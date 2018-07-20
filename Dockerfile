@@ -29,6 +29,7 @@ RUN apt-get update && \
         libptscotch-dev \
         libeigen3-dev \
         python3-dev \
+        python3-mpi4py \
         swig3.0 \
         \
         tk-dev \
@@ -43,7 +44,6 @@ RUN apt-get update && \
         cython \
         nose \
         numpy \
-        mpi4py \
         meshio \
         \
         ipython \
