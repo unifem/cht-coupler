@@ -79,6 +79,7 @@ RUN apt-get update && \
 RUN apt-get install --no-install-recommends software-properties-common && \
     add-apt-repository ppa:fenics-packages/fenics && \
     apt-get update && \
+    DEBIAN_FRONTEND=noninteractive && \
     apt-get install --no-install-recommends fenics && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
