@@ -72,19 +72,25 @@ RUN apt-get update && \
           pybind11 \
           ply \
           pytest \
-          six \
-          petsc4py \
-          slepc4py && \
+          six && \
       rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-# Install FEniCS (including dolfin and mshr)
-RUN pip3 install -U fenics-ffc && \
-    FENICS_VERSION=$(python3 -c"import ffc; print(ffc.__version__)") && \
-    git clone --branch=$FENICS_VERSION https://bitbucket.org/fenics-project/dolfin && \
+# Install FEniCS
+RUN apt-get install --no-install-recommends software-properties-common && \
+    add-apt-repository ppa:fenics-packages/fenics && \
+    apt-get update && \
+    apt-get install --no-install-recommends fenics && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+#  pip3 install -U fenics-ffc && \
+#  git clone --branch=$FENICS_VERSION https://bitbucket.org/fenics-project/dolfin && \
+#  mkdir dolfin/build && cd dolfin/build && cmake .. && make install && cd ../.. && \
+#  cd dolfin/python && pip3 install . && cd ../.. && \
+
+# Install mshr
+RUN FENICS_VERSION=$(python3 -c"import ffc; print(ffc.__version__)") && \
     git clone --branch=$FENICS_VERSION https://bitbucket.org/fenics-project/mshr && \
-    mkdir dolfin/build && cd dolfin/build && cmake .. && make install && cd ../.. && \
     mkdir mshr/build   && cd mshr/build   && cmake .. && make install && cd ../.. && \
-    cd dolfin/python && pip3 install . && cd ../.. && \
     cd mshr/python   && pip3 install . && cd ../.. && \
     rm -rf /tmp/*
 
