@@ -80,20 +80,8 @@ RUN apt-get install --no-install-recommends software-properties-common && \
     add-apt-repository ppa:fenics-packages/fenics && \
     apt-get update && \
     DEBIAN_FRONTEND=noninteractive && \
-    apt-get install --no-install-recommends fenics && \
+    apt-get install --no-install-recommends fenics mshr && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-
-#  pip3 install -U fenics-ffc && \
-#  git clone --branch=$FENICS_VERSION https://bitbucket.org/fenics-project/dolfin && \
-#  mkdir dolfin/build && cd dolfin/build && cmake .. && make install && cd ../.. && \
-#  cd dolfin/python && pip3 install . && cd ../.. && \
-
-# Install mshr
-RUN FENICS_VERSION=$(python3 -c"import ffc; print(ffc.__version__)") && \
-    git clone --branch=$FENICS_VERSION https://bitbucket.org/fenics-project/mshr && \
-    mkdir mshr/build   && cd mshr/build   && cmake .. && make install && cd ../.. && \
-    cd mshr/python   && pip3 install . && cd ../.. && \
-    rm -rf /tmp/*
 
 # Install fenics-tools (this might be removed later)
 RUN cd /tmp && \
