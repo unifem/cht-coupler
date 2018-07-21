@@ -1,4 +1,4 @@
-# Builds a Docker image for FEniCS with PETSc
+# Builds a Docker image for FEniCS
 
 # First, create an intermediate image to checkout git repository
 FROM unifem/cht-coupler:base as intermediate
@@ -21,12 +21,6 @@ LABEL maintainer "Xiangmin Jiao <xmjiao@gmail.com>"
 USER root
 WORKDIR /tmp
 
-# Install PETSC and SLEPC
-ENV PETSC_VERSION=3.7.6
-ENV SLEPC_VERSION=3.7.4
-ENV PETSC4PY_VERSION=3.7.0
-ENV SLEPC4PY_VERSION=3.7.0
-
 # Install system packages
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
@@ -46,11 +40,6 @@ RUN apt-get update && \
         libblacs-openmpi1 libblacs-mpi-dev \
         libptscotch-dev \
         libmumps-dev \
-        \
-        libpetsc${PETSC_VERSION}-dev \
-        libslepc${SLEPC_VERSION}-dev \
-        python3-petsc4py="${PETSC4PY_VERSION}*" \
-        python3-slepc4py="${SLEPC4PY_VERSION}*" \
         \
         git-lfs \
         libnss3 \
@@ -83,33 +72,21 @@ RUN apt-get update && \
           pybind11 \
           ply \
           pytest \
-          six && \
+          six \
+          petsc4py \
+          slepc4py && \
       rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-ENV PETSC_DIR=/usr/lib/petscdir/${PETSC_VERSION}/x86_64-linux-gnu-real
-ENV SLEPC_DIR=/usr/lib/slepcdir/${SLEPC_VERSION}/x86_64-linux-gnu-real
-
-ADD image/home $DOCKER_HOME
-
-# Build FEniCS with Python3
-ENV FENICS_BUILD_TYPE=Release \
-    FENICS_PREFIX=/usr/local \
-    FENICS_VERSION=2017.1.0 \
-    FENICS_PYTHON=python3
-
-ARG FENICS_SRC_DIR=/tmp/src
-
-
-# Disable testing of compilation of PETSC and SLEPC in cmake
-# cmake is broken in dolfin when using system installed PETSC and SLEPC
-ARG CMAKE_EXTRA_ARGS="-DPETSC_TEST_LIB_COMPILED=1 -DPETSC_TEST_LIB_EXITCODE=0 \
-                      -DSLEPC_TEST_LIB_COMPILED=1 -DSLEPC_TEST_LIB_EXITCODE=0"
-
-RUN $DOCKER_HOME/bin/fenics-pull && \
-    $DOCKER_HOME/bin/fenics-build && \
-    ldconfig && \
-    rm -rf /tmp/src && \
-    rm -f $DOCKER_HOME/bin/fenics-*
+# Install FEniCS (including dolfin and mshr)
+RUN pip3 install -U fenics-ffc && \
+    FENICS_VERSION=$(python3 -c"import ffc; print(ffc.__version__)") && \
+    git clone --branch=$FENICS_VERSION https://bitbucket.org/fenics-project/dolfin && \
+    git clone --branch=$FENICS_VERSION https://bitbucket.org/fenics-project/mshr && \
+    mkdir dolfin/build && cd dolfin/build && cmake .. && make install && cd ../.. && \
+    mkdir mshr/build   && cd mshr/build   && cmake .. && make install && cd ../.. && \
+    cd dolfin/python && pip3 install . && cd ../.. && \
+    cd mshr/python   && pip3 install . && cd ../.. && \
+    rm -rf /tmp/*
 
 # Install fenics-tools (this might be removed later)
 RUN cd /tmp && \
