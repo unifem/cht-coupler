@@ -76,8 +76,7 @@ RUN apt-get update && \
       rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Install FEniCS
-RUN apt-get install --no-install-recommends software-properties-common && \
-    add-apt-repository ppa:fenics-packages/fenics && \
+RUN add-apt-repository ppa:fenics-packages/fenics-2017.2.0 && \
     apt-get update && \
     DEBIAN_FRONTEND=noninteractive && \
     apt-get install --no-install-recommends fenics mshr && \
