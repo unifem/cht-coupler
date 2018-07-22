@@ -79,7 +79,7 @@ RUN apt-get update && \
 RUN add-apt-repository ppa:fenics-packages/fenics-2017.2.0 && \
     apt-get update && \
     DEBIAN_FRONTEND=noninteractive && \
-    apt-get install --no-install-recommends fenics mshr && \
+    apt-get install --no-install-recommends fenics && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Install fenics-tools (this might be removed later)
