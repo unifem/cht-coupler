@@ -90,6 +90,8 @@ RUN cd /tmp && \
 
 ENV PYTHONPATH=$FENICS_PREFIX/lib/python3/dist-packages:$PYTHONPATH
 
+COPY --from=intermediate /tmp/apps .
+
 # Install fesol
 RUN cd fesol && \
     python3 setup.py install && \
