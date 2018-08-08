@@ -8,10 +8,11 @@ FROM unifem/cht-coupler:base
 LABEL maintainer "Xiangmin Jiao <xmjiao@gmail.com>"
 
 USER $DOCKER_USER
-WORKDIR $DOCKER_HOME/project
+WORKDIR $DOCKER_HOME
 
 # Install MOAB and pymoab from sources into system directories
-RUN git clone --depth=1 https://bitbucket.org/fathomteam/moab.git && \
+RUN mkdir -p project && cd project && \
+    git clone --depth=1 https://bitbucket.org/fathomteam/moab.git && \
     cd moab && \
     autoreconf -fi && \
     ./configure \
@@ -42,5 +43,4 @@ RUN git clone --depth=1 https://bitbucket.org/fathomteam/moab.git && \
 
 ENV MOAB_ROOT=$DOCKER_HOME/.local
 
-WORKDIR $DOCKER_HOME
 USER root
