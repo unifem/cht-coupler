@@ -42,5 +42,7 @@ RUN cd /tmp && \
     python3 setup.py install && \
     rm -rf /tmp/moab
 
+ENV MOAB_ROOT=/usr/local
+
 WORKDIR $DOCKER_HOME
 USER root
