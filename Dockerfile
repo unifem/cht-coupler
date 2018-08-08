@@ -17,7 +17,8 @@ ADD image/bin /tmp
 # Use fix_ompi_dlopen.sh to fix dlopen issue with OpenMPI v2.x
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-        build-essential gfortran cmake wget \
+        build-essential gfortran \
+        cmake wget \
         automake autogen autoconf libtool \
         patchelf \
         openmpi-bin libopenmpi-dev \
@@ -42,38 +43,9 @@ RUN apt-get update && \
     pip3 install -U \
         setuptools\
         cython \
-        nose \
-        numpy \
-        meshio \
-        \
-        ipython \
-        jupyter \
-        jupyter_latex_envs \
-        ipywidgets && \
-    jupyter nbextension install --py --system \
-         widgetsnbextension && \
-    jupyter nbextension enable --py --system \
-         widgetsnbextension && \
-    jupyter-nbextension install --py --system \
-        latex_envs && \
-    jupyter-nbextension enable --py --system \
-        latex_envs && \
-    jupyter-nbextension install --system \
-        https://bitbucket.org/ipre/calico/downloads/calico-spell-check-1.0.zip && \
-    jupyter-nbextension install --system \
-        https://bitbucket.org/ipre/calico/downloads/calico-document-tools-1.0.zip && \
-    jupyter-nbextension install --system \
-        https://bitbucket.org/ipre/calico/downloads/calico-cell-tools-1.0.zip && \
-    jupyter-nbextension enable --system \
-        calico-spell-check && \
-    \
-    curl -L https://github.com/hbin/top-programming-fonts/raw/master/install.sh | bash && \
-    \
-    touch $DOCKER_HOME/.log/jupyter.log && \
-    chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME && \
+        numpy && \
     \
     /tmp/fix_ompi_dlopen.sh && \
-    \
     mkdir -p /usr/lib/hdf5-openmpi && \
     ln -s -f /usr/include/hdf5/openmpi /usr/lib/hdf5-openmpi/include && \
     ln -s -f /usr/lib/x86_64-linux-gnu/hdf5/openmpi /usr/lib/hdf5-openmpi/lib && \
