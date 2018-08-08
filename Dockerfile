@@ -40,5 +40,7 @@ RUN git clone --depth=1 https://bitbucket.org/fathomteam/moab.git && \
     cd pymoab && \
     python3 setup.py install --user
 
+ENV MOAB_ROOT=$DOCKER_HOME/.local
+
 WORKDIR $DOCKER_HOME
 USER root
