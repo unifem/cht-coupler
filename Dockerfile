@@ -2,7 +2,7 @@
 # It requires meshdb.
 
 # First, create an intermediate image to checkout git repository
-FROM unifem/cht-coupler:meshdb as intermediate
+FROM unifem/cht-coupler:base as intermediate
 LABEL maintainer "Xiangmin Jiao <xmjiao@gmail.com>"
 
 USER root
@@ -18,7 +18,7 @@ RUN git clone --depth=1 \
         apps/pydtk2/.git/config
 
 # Perform a second-stage by copying from intermediate image
-FROM unifem/cht-coupler:meshdb
+FROM unifem/cht-coupler:base
 LABEL maintainer "Xiangmin Jiao <xmjiao@gmail.com>"
 
 USER root
