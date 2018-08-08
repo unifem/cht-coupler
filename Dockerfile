@@ -4,7 +4,7 @@
 # Authors:
 # Xiangmin Jiao <xmjiao@gmail.com>
 
-FROM unifem/cht-coupler:base
+FROM unifem/cht-coupler:dev-base
 LABEL maintainer "Xiangmin Jiao <xmjiao@gmail.com>"
 
 USER $DOCKER_USER
