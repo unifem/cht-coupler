@@ -44,5 +44,11 @@ RUN cd /tmp && \
 
 ENV MOAB_ROOT=/usr/local
 
+# Install paraview
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        paraview && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
 WORKDIR $DOCKER_HOME
 USER root
