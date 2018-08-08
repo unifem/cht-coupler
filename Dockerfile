@@ -3,7 +3,13 @@
 # Authors:
 # Xiangmin Jiao <xmjiao@gmail.com>
 
-ADD image/home $DOCKER_HOME/
+FROM paralab/cht-coupler:base
+LABEL maintainer "Xiangmin Jiao <xmjiao@gmail.com>"
+
+USER root
+WORKDIR /tmp
+
+ADD image/home $DOCKER_HOME
 
 # Install mscode and system packages
 RUN curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg && \
@@ -12,19 +18,18 @@ RUN curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > mic
     \
     apt-get update && \
     apt-get install  -y --no-install-recommends \
-	gdb\
-	ddd \
-	valgrind \
+        gdb \
+        ddd \
+        valgrind \
         electric-fence \
         kcachegrind \
         pandoc \
-	code \
-	meld \
-	emacs \
-	vim-gtk3 \
-	nano \
-	clang-format && \
-    apt-get install -y --no-install-recommends \
+	    code \
+	    meld \
+	    emacs \
+	    vim-gtk3 \
+	    nano \
+	    clang-format && \
     apt-get clean && \
     pip3 install -U \
         autopep8 \
