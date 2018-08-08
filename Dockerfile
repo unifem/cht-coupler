@@ -1,5 +1,5 @@
 # Builds a Docker image with OpenMPI v2.x, Python3, Jupyter Notebook,
-# MOAB/pyMOAB and CGNS/pyCGNS. CGNS and MOAB are compiled with 
+# MOAB/pyMOAB, CGNS/pyCGNS and Paraview. CGNS and MOAB are compiled with 
 # OpenMPI v2.x for parallel support. OpenMPI is patched to work with dlopen.
 #
 # Authors:
@@ -43,7 +43,8 @@ RUN apt-get update && \
         ttf-dejavu \
         tk-dev \
         libglu1-mesa-dev \
-        libxmu-dev && \
+        libxmu-dev \
+        paraview && \
     apt-get clean && \
     \
     \
