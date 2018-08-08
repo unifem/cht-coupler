@@ -34,7 +34,7 @@ LABEL maintainer "Xiangmin Jiao <xmjiao@gmail.com>"
 
 USER root
 
-COPY --from=intermediate /tmp/apps .
+COPY --from=intermediate /tmp/apps $DOCKER_HOME/project
 
 # Install OpenFOAM 5.0 (https://openfoam.org/download/5-0-ubuntu/),
 RUN add-apt-repository http://dl.openfoam.org/ubuntu && \
