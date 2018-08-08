@@ -1,103 +1,46 @@
-# Builds a Docker image with DataTransferKit and PyDTK.
-# It requires meshdb.
+# Builds a Docker image with MOAB and pymoab with parallel support
+# and install them into system directories.
+#
+# Authors:
+# Xiangmin Jiao <xmjiao@gmail.com>
 
-# First, create an intermediate image to checkout git repository
-FROM unifem/cht-coupler:base as intermediate
-LABEL maintainer "Xiangmin Jiao <xmjiao@gmail.com>"
-
-USER root
-WORKDIR /tmp
-
-ARG BB_TOKEN
-
-# Check out pydtk2 securely
-RUN git clone --depth=1 \
-        https://${BB_TOKEN}@bitbucket.org/qiaoc/pydtk2.git \
-        apps/pydtk2 2> /dev/null && \
-    perl -e 's/https:\/\/[\w:\.]+@([\w\.]+)\//git\@$1:/' -p -i \
-        apps/pydtk2/.git/config
-
-# Perform a second-stage by copying from intermediate image
 FROM unifem/cht-coupler:base
 LABEL maintainer "Xiangmin Jiao <xmjiao@gmail.com>"
 
 USER root
 WORKDIR /tmp
 
-ARG TRILINOS_VERSION=12-12-1
-ARG DTK_VERSION=2.0
-
-# Build DataTransferKit
-# For options to control Trilinos, see
-# https://trilinos.org/oldsite/TrilinosBuildQuickRef.html#configuring-makefile-generator
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-        libboost-filesystem-dev \
-        libboost-iostreams-dev \
-        libboost-math-dev \
-        libboost-program-options-dev \
-        libboost-system-dev \
-        libboost-thread-dev \
-        libboost-timer-dev && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/* /tmp/* && \
+# Install MOAB and pymoab from sources into system directories
+RUN cd /tmp && \
+    git clone --depth=1 https://bitbucket.org/fathomteam/moab.git && \
+    cd moab && \
+    autoreconf -fi && \
+    ./configure \
+        --prefix=/usr/local \
+        --with-mpi \
+        CC=mpicc \
+        CXX=mpicxx \
+        FC=mpif90 \
+        F77=mpif77 \
+        --enable-optimize \
+        --enable-shared=yes \
+        --with-blas=-lopenblas \
+        --with-lapack=-lopenblas \
+        --with-scotch=/usr/lib \
+        --with-metis=/usr/lib/x86_64-linux-gnu \
+        --with-eigen3=/usr/include/eigen3 \
+        --with-x \
+        --with-cgns \
+        --with-netcdf \
+        --with-hdf5=/usr/lib/hdf5-openmpi \
+        --with-hdf5-ldflags="-L/usr/lib/hdf5-openmpi/lib" \
+        --enable-ahf=yes \
+        --enable-tools=yes && \
+    make -j2 && make install && \
     \
-    git clone --depth 1 --branch trilinos-release-${TRILINOS_VERSION} \
-        https://github.com/trilinos/Trilinos.git && \
-    cd Trilinos && \
-    git clone --depth 1 --branch dtk-${DTK_VERSION} \
-        https://github.com/unifem/DataTransferKit.git && \
-    mkdir build && cd build && \
-    cmake \
-        -DCMAKE_INSTALL_PREFIX:PATH=/usr/local \
-        -DCMAKE_BUILD_TYPE:STRING=RELEASE \
-        -DCMAKE_VERBOSE_MAKEFILE:BOOL=OFF \
-        -DCMAKE_SHARED_LIBS:BOOL=ON \
-        -DTPL_ENABLE_MPI:BOOL=ON \
-        -DTPL_ENABLE_Boost:BOOL=ON \
-        -DBoost_INCLUDE_DIRS:PATH=/usr/include/boost \
-        -DTPL_ENABLE_Libmesh:BOOL=OFF \
-        -DTPL_ENABLE_MOAB:BOOL=ON \
-        -DMOAB_INCLUDE_DIRS=/usr/local/include \
-        -DMOAB_LIBRARY_DIRS=/usr/local/lib \
-        -DTPL_ENABLE_Netcdf:BOOL=ON \
-        -DTPL_ENABLE_BinUtils:BOOL=OFF \
-        -DTrilinos_ENABLE_ALL_OPTIONAL_PACKAGES:BOOL=OFF \
-        -DTrilinos_ENABLE_ALL_PACKAGES=OFF \
-        -DTrilinos_EXTRA_REPOSITORIES="DataTransferKit" \
-        -DTrilinos_ENABLE_EXPLICIT_INSTANTIATION:BOOL=ON \
-        -DTrilinos_ASSERT_MISSING_PACKAGES:BOOL=OFF \
-        -DTrilinos_ENABLE_TESTS:BOOL=OFF \
-        -DTrilinos_ENABLE_EXAMPLES:BOOL=OFF \
-        -DTrilinos_ENABLE_CXX11:BOOL=ON \
-        -DTrilinos_ENABLE_Tpetra:BOOL=ON \
-        -DTpetra_INST_INT_UNSIGNED_LONG:BOOL=ON \
-        -DTPL_ENABLE_BLAS:BOOL=ON \
-        -DTPL_BLAS_LIBRARIES=/usr/lib/x86_64-linux-gnu/libopenblas.so \
-        -DTPL_ENABLE_LAPACK:BOOL=ON \
-        -DTPL_LAPACK_LIBRARIES=/usr/lib/x86_64-linux-gnu/libopenblas.so \
-        -DTPL_ENABLE_Eigen:BOOL=ON \
-        -DTPL_Eigen_INCLUDE_DIRS=/usr/include/eigen3 \
-        -DTrilinos_ENABLE_DataTransferKit=ON \
-        -DDataTransferKit_ENABLE_DBC=ON \
-        -DDataTransferKit_ENABLE_TESTS=ON \
-        -DDataTransferKit_ENABLE_EXAMPLES=OFF \
-        -DDataTransferKit_ENABLE_ClangFormat=OFF \
-        -DTPL_ENABLE_BoostLib:BOOL=OFF \
-        -DBUILD_SHARED_LIBS:BOOL=ON \
-        .. && \
-    make -j2 && \
-    make install && \
-    \
-    rm -rf /tmp/*
-
-COPY --from=intermediate /tmp/apps .
-
-# Install pydtk2
-# make sure to add env CC=mpicxx
-RUN cd pydtk2 && \
-    env CC=mpicxx python3 setup.py install && \
-    cd .. && rm -rf pydtk2
+    cd pymoab && \
+    python3 setup.py install && \
+    rm -rf /tmp/moab
 
 WORKDIR $DOCKER_HOME
 USER root
