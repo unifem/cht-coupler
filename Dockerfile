@@ -29,6 +29,14 @@ LABEL maintainer "Xiangmin Jiao <xmjiao@gmail.com>"
 USER root
 WORKDIR /tmp
 
+# Install FreeCAD and Gmsh
+RUN add-apt-repository ppa:freecad-maintainers/freecad-stable && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends \
+        freecad \
+        gmsh && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
 # Copy git repository from intermediate image
 COPY --from=intermediate /tmp/apps .
 
