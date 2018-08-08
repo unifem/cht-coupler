@@ -1,8 +1,8 @@
 # Build a Docker image for CalculiX and PyCCX and install them
-# into system directories.
+# into user directories.
 
 # First, create an intermediate image to checkout git repository
-FROM unifem/cht-coupler:mapper-bin as intermediate
+FROM unifem/cht-coupler:mapper-dev as intermediate
 
 USER root
 WORKDIR /tmp
@@ -23,23 +23,21 @@ RUN git clone --depth=1 \
         apps/pyccx/.git/config
 
 # Perform a second-stage by copying from intermediate image
-FROM unifem/cht-coupler:mapper-bin
+FROM unifem/cht-coupler:mapper-dev
 LABEL maintainer "Xiangmin Jiao <xmjiao@gmail.com>"
 
 USER root
-WORKDIR /tmp
+WORKDIR $DOCKER_HOME
 
 # Copy git repository from intermediate image
-COPY --from=intermediate /tmp/apps .
+COPY --from=intermediate /tmp/apps project
 
 # Install libcalculix and pyccx
-RUN cd /tmp/libcalculix && \
-    make && make install && \
-    cd .. && \
+RUN cd project/libcalculix && \
+    make && make PREFIX=$DOCKER_HOME/.local install && \
     \
-    cd pyccx && \
-    python3 setup.py install && \
-    cd .. && rm -rf /tmp/*
+    cd ../pyccx && \
+    python3 setup.py install --user
 
 WORKDIR $DOCKER_HOME
 USER root
