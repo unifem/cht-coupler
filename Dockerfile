@@ -40,7 +40,7 @@ RUN apt-get update && \
         libboost-timer-dev && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* && \
-    RUN chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME
+    chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME
 
 USER $DOCKER_USER
 ARG TRILINOS_VERSION=12-12-1
