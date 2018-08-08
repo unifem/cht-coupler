@@ -17,20 +17,19 @@ RUN curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > mic
 	valgrind \
         electric-fence \
         kcachegrind \
-
         pandoc \
 	code \
 	meld \
 	emacs \
 	vim-gtk3 \
 	nano \
-        clang \
 	clang-format && \
     apt-get install -y --no-install-recommends \
     apt-get clean && \
     pip3 install -U \
         autopep8 \
         flake8 \
+        spyder \
         pylint \
         pytest && \
     echo "move_to_config vscode" >> /usr/local/bin/init_vnc && \
