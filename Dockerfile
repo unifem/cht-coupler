@@ -34,12 +34,12 @@ COPY --from=intermediate /tmp/apps project
 
 # Install libcalculix and pyccx
 RUN cd project/libcalculix && \
-    make -j2 && \
+    make && \
     make PREFIX=$DOCKER_HOME/.local install && \
     make clean && \
     \
     cd ../pyccx && \
-    sed -i -e 's/usr\/local/home\/$DOCKER_USER\/.local/g' setup.cfg && \
+    sed -i -e "s/usr\/local/home\/$DOCKER_USER\/.local/g" setup.cfg && \
     python3 setup.py install --user &&\
     python3 setup.py clean --all
 
