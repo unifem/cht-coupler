@@ -62,6 +62,10 @@ RUN bash -c 'for ext in \
         formulahendry.terminal; \
         do \
             code --install-extension $ext; \
-        done'
+        done' && \
+    mkdir -p $DOCKER_HOME/.local/bin && \
+    mkdir -p $DOCKER_HOME/.local/lib && \
+    echo "export PATH=$DOCKER_HOME/.local/bin:$PATH" >> $DOCKER_HOME/.profile && \
+    echo "export LD_LIBRARY_PATH=$DOCKER_HOME/.local/lib:$LD_LIBRARY_PATH" >> $DOCKER_HOME/.profile
 
 USER root
