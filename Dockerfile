@@ -35,7 +35,7 @@ RUN add-apt-repository http://dl.openfoam.org/ubuntu && \
     apt-get install -y --no-install-recommends \
         openfoam5 \
         paraviewopenfoam54 && \
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
+    rm -rf /var/lib/apt/lists/* && \
     \
     echo "source /opt/openfoam5/etc/bashrc" >> $DOCKER_HOME/.profile && \
     chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME
