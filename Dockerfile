@@ -13,7 +13,7 @@ WORKDIR /tmp
 ADD image/home $DOCKER_HOME
 ADD image/bin /tmp
 
-# Install system packages
+# Install system packages and jupyter-notebook.
 # Use fix_ompi_dlopen.sh to fix dlopen issue with OpenMPI v2.x
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
@@ -45,12 +45,6 @@ RUN apt-get update && \
         libxmu-dev && \
     apt-get clean && \
     \
-    curl -O https://bootstrap.pypa.io/get-pip.py && \
-    python3 get-pip.py && \
-    pip3 install -U \
-        setuptools\
-        cython \
-        numpy && \
     \
     /tmp/fix_ompi_dlopen.sh && \
     mkdir -p /usr/lib/hdf5-openmpi && \
@@ -61,8 +55,57 @@ RUN apt-get update && \
     ln -s -f /usr/include/hdf5/serial /usr/lib/hdf5-serial/include && \
     ln -s -f /usr/lib/x86_64-linux-gnu/hdf5/serial /usr/lib/hdf5-serial/lib && \
     \
+    curl -O https://bootstrap.pypa.io/get-pip.py && \
+    python3 get-pip.py && \
+    pip3 install -U \
+          setuptools \
+          matplotlib \
+          sympy==1.1.1 \
+          scipy \
+          pandas \
+          nose \
+          sphinx \
+          breathe \
+          cython \
+          \
+          autopep8 \
+          flake8 \
+          pylint \
+          flufl.lock \
+          ply \
+          pytest \
+          six \
+          PyQt5 \
+          spyder \
+          \
+          urllib3 \
+          requests \
+          pylint \
+          progressbar2 \
+          PyDrive \
+          \
+          ipython \
+          jupyter \
+          jupyter_latex_envs \
+          jupyter_contrib_nbextensions \
+          ipywidgets && \
+    jupyter nbextension install --py --system \
+         widgetsnbextension && \
+    jupyter nbextension enable --py --system \
+         widgetsnbextension && \
+    jupyter-nbextension install --py --system \
+        latex_envs && \
+    jupyter-nbextension enable --py --system \
+        latex_envs && \
+    jupyter contrib nbextension install --system && \
+    jupyter nbextension enable spellchecker/main && \
+    \
+    curl -L https://github.com/hbin/top-programming-fonts/raw/master/install.sh | bash && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
+    \
+    touch $DOCKER_HOME/.log/jupyter.log && \
+    chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-USER $DOCKER_USER
 WORKDIR $DOCKER_HOME
 USER root
