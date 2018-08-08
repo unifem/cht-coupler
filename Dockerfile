@@ -43,8 +43,7 @@ RUN apt-get update && \
         ttf-dejavu \
         tk-dev \
         libglu1-mesa-dev \
-        libxmu-dev \
-        paraview && \
+        libxmu-dev && \
     apt-get clean && \
     \
     \
