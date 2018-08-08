@@ -1,5 +1,5 @@
 # Builds a Docker image with MOAB and pymoab with parallel support
-# and install them into system directories.
+# and compile them in user directories.
 #
 # Authors:
 # Xiangmin Jiao <xmjiao@gmail.com>
@@ -7,16 +7,15 @@
 FROM unifem/cht-coupler:base
 LABEL maintainer "Xiangmin Jiao <xmjiao@gmail.com>"
 
-USER root
-WORKDIR /tmp
+USER $DOCKER_USER
+WORKDIR $DOCKER_HOME/project
 
 # Install MOAB and pymoab from sources into system directories
-RUN cd /tmp && \
-    git clone --depth=1 https://bitbucket.org/fathomteam/moab.git && \
+RUN git clone --depth=1 https://bitbucket.org/fathomteam/moab.git && \
     cd moab && \
     autoreconf -fi && \
     ./configure \
-        --prefix=/usr/local \
+        --prefix=$DOCKER_HOME/.local \
         --with-mpi \
         CC=mpicc \
         CXX=mpicxx \
@@ -36,11 +35,10 @@ RUN cd /tmp && \
         --with-hdf5-ldflags="-L/usr/lib/hdf5-openmpi/lib" \
         --enable-ahf=yes \
         --enable-tools=yes && \
-    make -j2 && make install && \
+    make -j2 && make install && make clean && \
     \
     cd pymoab && \
-    python3 setup.py install && \
-    rm -rf /tmp/moab
+    python3 setup.py install --user
 
 WORKDIR $DOCKER_HOME
 USER root
