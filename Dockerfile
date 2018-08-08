@@ -42,7 +42,7 @@ COPY --from=intermediate /tmp/apps .
 
 # Install libcalculix and pyccx
 RUN cd /tmp/libcalculix && \
-    make && make install && \
+    make -j2 && make install && \
     cd .. && \
     \
     cd pyccx && \
