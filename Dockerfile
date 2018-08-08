@@ -19,6 +19,13 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         build-essential gfortran \
         cmake wget \
+        bison \
+        flex \
+        git \
+        bash-completion \
+        bsdtar \
+        rsync \
+        ccache \
         automake autogen autoconf libtool \
         patchelf \
         openmpi-bin libopenmpi-dev \
@@ -32,7 +39,7 @@ RUN apt-get update && \
         python3-dev \
         python3-mpi4py \
         swig3.0 \
-        \
+        ttf-dejavu \
         tk-dev \
         libglu1-mesa-dev \
         libxmu-dev && \
