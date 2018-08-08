@@ -24,12 +24,8 @@ LABEL maintainer "Xiangmin Jiao <xmjiao@gmail.com>"
 USER root
 WORKDIR /tmp
 
-ARG TRILINOS_VERSION=12-12-1
-ARG DTK_VERSION=2.0
+COPY --from=intermediate /tmp/apps .
 
-# Build DataTransferKit
-# For options to control Trilinos, see
-# https://trilinos.org/oldsite/TrilinosBuildQuickRef.html#configuring-makefile-generator
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         libboost-filesystem-dev \
@@ -40,9 +36,15 @@ RUN apt-get update && \
         libboost-thread-dev \
         libboost-timer-dev && \
     apt-get clean && \
-    rm -rf /var/lib/apt/lists/* /tmp/* && \
-    \
-    git clone --depth 1 --branch trilinos-release-${TRILINOS_VERSION} \
+    rm -rf /var/lib/apt/lists/* /tmp/*
+
+ARG TRILINOS_VERSION=12-12-1
+ARG DTK_VERSION=2.0
+
+# Build DataTransferKit
+# For options to control Trilinos, see
+# https://trilinos.org/oldsite/TrilinosBuildQuickRef.html#configuring-makefile-generator
+RUN git clone --depth 1 --branch trilinos-release-${TRILINOS_VERSION} \
         https://github.com/trilinos/Trilinos.git && \
     cd Trilinos && \
     git clone --depth 1 --branch dtk-${DTK_VERSION} \
@@ -58,8 +60,8 @@ RUN apt-get update && \
         -DBoost_INCLUDE_DIRS:PATH=/usr/include/boost \
         -DTPL_ENABLE_Libmesh:BOOL=OFF \
         -DTPL_ENABLE_MOAB:BOOL=ON \
-        -DMOAB_INCLUDE_DIRS=/usr/local/include \
-        -DMOAB_LIBRARY_DIRS=/usr/local/lib \
+        -DMOAB_INCLUDE_DIRS=$MOAB_ROOT/include \
+        -DMOAB_LIBRARY_DIRS=$MOAB_ROOT/lib \
         -DTPL_ENABLE_Netcdf:BOOL=ON \
         -DTPL_ENABLE_BinUtils:BOOL=OFF \
         -DTrilinos_ENABLE_ALL_OPTIONAL_PACKAGES:BOOL=OFF \
@@ -90,8 +92,6 @@ RUN apt-get update && \
     make install && \
     \
     rm -rf /tmp/*
-
-COPY --from=intermediate /tmp/apps .
 
 # Install pydtk2
 # make sure to add env CC=mpicxx
