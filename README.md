@@ -1,3 +1,3 @@
 # cht-coupler
 
-This is the base docker image.
+This is the dev-base branch for development environments.
