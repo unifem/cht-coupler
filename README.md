@@ -1,4 +1,4 @@
 # cht-coupler
 
-Build a Docker image for OpenFOAM/PyOFM and CalculiX/PyCCX
-and install them into system directories.
+Build a Docker image for CalculiX and PyCCX and install them
+into system directories.
