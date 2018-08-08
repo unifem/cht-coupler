@@ -54,6 +54,6 @@ WORKDIR $DOCKER_HOME
 RUN mkdir -p project && \
     cd project && \
     curl -s -L https://github.com/chiao45/foam_ccx_cht/archive/master.zip | \
-        bsdtar -zxv --strip-components 2 foam_ccx_cht-master/image/notebooks
+        bsdtar -zxvf - --strip-components 2 foam_ccx_cht-master/image/notebooks
 
 USER root
