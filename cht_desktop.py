@@ -22,7 +22,7 @@ tag = ""
 projdir = "project"
 workdir = "project"
 volume = tag
-config = proj + '_' + tag + '_config'
+config = proj + '_config'
 
 
 def parse_args(description):
