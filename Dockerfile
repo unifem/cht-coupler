@@ -96,7 +96,9 @@ RUN git clone --depth 1 --branch trilinos-release-${TRILINOS_VERSION} \
 
 # make sure to add env CC=mpicxx
 RUN cd $DOCKER_HOME/project/pydtk2 && \
-    env CC=mpicxx python3 setup.py install --user
+    sed -i -e "s/usr\/local/home\/$DOCKER_USER\/.local/g" setup.cfg && \
+    env CC=mpicxx python3 setup.py install --user && \
+    python3 setup.py clean --all
 
 WORKDIR $DOCKER_HOME
 USER root
