@@ -27,7 +27,6 @@ RUN curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > mic
 	    code \
 	    meld \
 	    emacs \
-	    vim-gtk3 \
 	    nano \
 	    clang-format && \
     apt-get clean && \
