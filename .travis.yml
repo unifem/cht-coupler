@@ -7,6 +7,7 @@ before_script:
 
 script:
   - './ci-util/build-docker.sh : paralab/cht-coupler'
+  - 'docker tag paralab/cht-coupler:$TRAVIS_BRANCH unifem/cht-coupler:$TRAVIS_BRANCH && docker push unifem/cht-coupler'
 
 after_success:
   - ./ci-util/trigger-via-api.sh
