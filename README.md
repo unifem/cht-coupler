@@ -1,3 +1,4 @@
 # cht-coupler
 
-This Docker image contains DTK.
+Build a Docker image with DataTransferKit and PyDTK
+and install them into user directories.

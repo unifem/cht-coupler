@@ -1,8 +1,8 @@
-# Builds a Docker image with DataTransferKit and PyDTK.
-# It requires meshdb.
+# Builds a Docker image with DataTransferKit and PyDTK
+# and install them into user directories.
 
 # First, create an intermediate image to checkout git repository
-FROM unifem/cht-coupler:meshdb-bin as intermediate
+FROM unifem/cht-coupler:meshdb-dev as intermediate
 LABEL maintainer "Xiangmin Jiao <xmjiao@gmail.com>"
 
 USER root
@@ -18,14 +18,13 @@ RUN git clone --depth=1 \
         apps/pydtk2/.git/config
 
 # Perform a second-stage by copying from intermediate image
-FROM unifem/cht-coupler:meshdb-bin
+FROM unifem/cht-coupler:meshdb-dev
 LABEL maintainer "Xiangmin Jiao <xmjiao@gmail.com>"
 
-USER root
-WORKDIR /tmp
+WORKDIR $DOCKER_HOME/project
+COPY --from=intermediate /tmp/apps .
 
-ARG TRILINOS_VERSION=12-12-1
-ARG DTK_VERSION=2.0
+USER root
 
 # Build DataTransferKit
 # For options to control Trilinos, see
@@ -41,15 +40,20 @@ RUN apt-get update && \
         libboost-timer-dev && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* && \
-    \
-    git clone --depth 1 --branch trilinos-release-${TRILINOS_VERSION} \
+    RUN chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME
+
+USER $DOCKER_USER
+ARG TRILINOS_VERSION=12-12-1
+ARG DTK_VERSION=2.0
+
+RUN git clone --depth 1 --branch trilinos-release-${TRILINOS_VERSION} \
         https://github.com/trilinos/Trilinos.git && \
     cd Trilinos && \
     git clone --depth 1 --branch dtk-${DTK_VERSION} \
         https://github.com/unifem/DataTransferKit.git && \
     mkdir build && cd build && \
     cmake \
-        -DCMAKE_INSTALL_PREFIX:PATH=/usr/local \
+        -DCMAKE_INSTALL_PREFIX:PATH=$HOME/.local \
         -DCMAKE_BUILD_TYPE:STRING=RELEASE \
         -DCMAKE_VERBOSE_MAKEFILE:BOOL=OFF \
         -DCMAKE_SHARED_LIBS:BOOL=ON \
@@ -58,8 +62,8 @@ RUN apt-get update && \
         -DBoost_INCLUDE_DIRS:PATH=/usr/include/boost \
         -DTPL_ENABLE_Libmesh:BOOL=OFF \
         -DTPL_ENABLE_MOAB:BOOL=ON \
-        -DMOAB_INCLUDE_DIRS=/usr/local/include \
-        -DMOAB_LIBRARY_DIRS=/usr/local/lib \
+        -DMOAB_INCLUDE_DIRS=$MOAB_ROOT/include \
+        -DMOAB_LIBRARY_DIRS=$MOAB_ROOT/lib \
         -DTPL_ENABLE_Netcdf:BOOL=ON \
         -DTPL_ENABLE_BinUtils:BOOL=OFF \
         -DTrilinos_ENABLE_ALL_OPTIONAL_PACKAGES:BOOL=OFF \
@@ -88,16 +92,11 @@ RUN apt-get update && \
         .. && \
     make -j2 && \
     make install && \
-    \
-    rm -rf /tmp/*
+    make clean
 
-COPY --from=intermediate /tmp/apps .
-
-# Install pydtk2
 # make sure to add env CC=mpicxx
-RUN cd pydtk2 && \
-    env CC=mpicxx python3 setup.py install && \
-    cd .. && rm -rf pydtk2
+RUN cd $DOCKER_HOME/project/pydtk2 && \
+    env CC=mpicxx python3 setup.py install --user
 
 WORKDIR $DOCKER_HOME
 USER root
