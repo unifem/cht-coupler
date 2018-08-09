@@ -1,7 +1,7 @@
 # Builds a Docker image for OVERFLOW and tools
 
 # First, create an intermediate image to checkout git repository
-FROM unifem/cht-coupler:ccx-dev as intermediate
+FROM unifem/cht-coupler:ccx-mapper-dev as intermediate
 ARG OVF_REPO
 ARG PEG_REPO
 ARG CGT_REPO
@@ -19,7 +19,7 @@ RUN git clone --depth=1 ${OVF_REPO} apps/overflow 2> /dev/null && \
         apps/*/.git/config
 
 # Perform a second-stage by copying from the intermediate image
-FROM unifem/cht-coupler:ccx-dev
+FROM unifem/cht-coupler:ccx-mapper-dev
 LABEL maintainer "Xiangmin Jiao <xmjiao@gmail.com>"
 
 USER root
