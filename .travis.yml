@@ -8,6 +8,7 @@ before_script:
 script:
   - './ci-util/build-docker.sh'
   - 'docker tag unifem/cht-coupler:$TRAVIS_BRANCH paralab/cht-coupler:$TRAVIS_BRANCH && 
+     docker tag unifem/cht-coupler:$TRAVIS_BRANCH paralab/cht-coupler:level1a && 
      docker push paralab/cht-coupler'
 
 after_success:
