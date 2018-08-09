@@ -36,7 +36,7 @@ RUN mkdir -p project && cd project && \
         --with-hdf5-ldflags="-L/usr/lib/hdf5-openmpi/lib" \
         --enable-ahf=yes \
         --enable-tools=yes && \
-    make -j2 && make install && make clean && \
+    make -j2 && make install && \
     \
     cd pymoab && \
     python3 setup.py install --user
