@@ -1,14 +1,17 @@
 os: linux
+sudo: required
 language: python
 services: docker
 
 before_script:
-  - git clone --depth=1 https://$GIT_TOKEN@github.com/xmjiao/ci-util.git
+  - sudo echo '{"experimental":true}' | sudo tee /etc/docker/daemon.json
+  - sudo service docker restart
+  - git clone --depth=1 https://$GIT_TOKEN@github.com/xmjiao/ci-util.git 2> /dev/null
 
 script:
-  - './ci-util/build-docker.sh'
-  - 'docker tag unifem/cht-coupler:$TRAVIS_BRANCH paralab/cht-coupler:$TRAVIS_BRANCH && 
-     docker tag unifem/cht-coupler:$TRAVIS_BRANCH paralab/cht-coupler:level1a && 
+  - './ci-util/build-docker.sh : : --build-arg BB_TOKEN=$BB_TOKEN --squash=true &&
+     docker tag unifem/cht-coupler:$TRAVIS_BRANCH paralab/cht-coupler:$TRAVIS_BRANCH &&
+     docker tag unifem/cht-coupler:$TRAVIS_BRANCH paralab/cht-coupler:level1a &&
      docker push paralab/cht-coupler'
 
 after_success:
