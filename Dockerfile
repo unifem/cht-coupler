@@ -95,7 +95,7 @@ USER $DOCKER_USER
 
 # Install fesol
 RUN cd $DOCKER_HOME/project/fesol && \
-    python3 setup.py install --user
+    python3 setup.py install
 
 WORKDIR $DOCKER_HOME
 USER root
