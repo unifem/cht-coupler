@@ -43,7 +43,10 @@ WORKDIR $DOCKER_HOME/project
 RUN echo ". /opt/openfoam5/etc/bashrc\n./configure --python\n./Allwmake\n" > \
         libofm/install.sh && \
     cd $DOCKER_HOME/project/libofm && \
-    bash ./install.sh
+    bash ./install.sh && \
+    cd $DOCKER_HOME/project/libofm/python && \
+    python3 setup.py install --user && \
+    $DOCKER_HOME/project/libofm/Allwclean python
 
 WORKDIR $DOCKER_HOME
 USER root
