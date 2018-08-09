@@ -1,7 +1,7 @@
 # Builds a Docker image for FEniCS
 
 # First, create an intermediate image to checkout git repository
-FROM unifem/cht-coupler:ovt-dev as intermediate
+FROM unifem/cht-coupler:ovt-mapper-bin as intermediate
 
 USER root
 WORKDIR /tmp
@@ -15,7 +15,7 @@ RUN git clone --depth=1 \
         apps/*/.git/config
 
 # Perform a second-stage by copying from intermediate image
-FROM unifem/cht-coupler:ovt-dev
+FROM unifem/cht-coupler:ovt-mapper-bin
 LABEL maintainer "Xiangmin Jiao <xmjiao@gmail.com>"
 
 COPY --from=intermediate /tmp/apps $DOCKER_HOME/project
