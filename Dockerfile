@@ -3,7 +3,7 @@
 # The installation procedure follows the (somewhat-oudated) Guide at
 # See http://www.overtureframework.org/documentation/install.pdf
 
-FROM unifem/cht-coupler:dev-base
+FROM unifem/cht-coupler:mapper-dev
 LABEL maintainer "Xiangmin Jiao <xmjiao@gmail.com>"
 
 USER root
