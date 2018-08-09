@@ -1,7 +1,7 @@
 # Builds a Docker image for OVERTURE and PyOVERTURE
 
 # First, create an intermediate image to checkout git repository
-FROM unifem/cht-coupler:ovt-frw-dev as intermediate
+FROM unifem/cht-coupler:ovt-frw-mapper-bin as intermediate
 
 USER root
 WORKDIR /tmp
