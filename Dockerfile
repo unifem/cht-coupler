@@ -18,9 +18,6 @@ RUN git clone --depth=1 \
 FROM unifem/cht-coupler:ovt-dev
 LABEL maintainer "Xiangmin Jiao <xmjiao@gmail.com>"
 
-COPY --from=intermediate /tmp/apps /tmp
-RUN chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME
-
 USER root
 WORKDIR /tmp
 
@@ -90,6 +87,8 @@ RUN cd /tmp && \
     cd fenicstools && \
     python3 setup.py install && \
     rm -rf /tmp/fenicstools
+
+COPY --from=intermediate /tmp/apps /tmp
 
 # Install fesol
 RUN cd /tmp/fesol && \
