@@ -12,7 +12,7 @@ before_script:
   - git clone --depth=1 https://$GIT_TOKEN@github.com/xmjiao/ci-util.git 2> /dev/null
 
 script:
-  - './ci-util/build-docker.sh : paralab/cht-coupler:$TRAVIS_BRANCH,level4b
+  - './ci-util/build-docker.sh : paralab/cht-coupler:$TRAVIS_BRANCH,level4c
          --build-arg OVF_REPO=$OVF_REPO
          --build-arg PEG_REPO=$PEG_REPO
          --build-arg CGT_REPO=$CGT_REPO
