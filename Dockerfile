@@ -1,7 +1,7 @@
 # Builds a Docker image for FEniCS
 
 # First, create an intermediate image to checkout git repository
-FROM unifem/cht-coupler:base as intermediate
+FROM unifem/cht-coupler:ovt-dev as intermediate
 
 USER root
 WORKDIR /tmp
@@ -9,14 +9,17 @@ WORKDIR /tmp
 ARG BB_TOKEN
 
 RUN git clone --depth=1 \
-    https://${BB_TOKEN}@bitbucket.org/qiaoc/fesol.git \
+    https://${BB_TOKEN}@bitbucket.org/paralabc/fesol.git \
         apps/fesol 2> /dev/null && \
     perl -e 's/https:\/\/[\w:\.]+@([\w\.]+)\//git\@$1:/' -p -i \
         apps/*/.git/config
 
 # Perform a second-stage by copying from intermediate image
-FROM unifem/cht-coupler:base
+FROM unifem/cht-coupler:ovt-dev
 LABEL maintainer "Xiangmin Jiao <xmjiao@gmail.com>"
+
+COPY --from=intermediate /tmp/apps $DOCKER_HOME/project
+RUN chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME
 
 USER root
 WORKDIR /tmp
@@ -88,14 +91,11 @@ RUN cd /tmp && \
     python3 setup.py install && \
     rm -rf /tmp/fenicstools
 
-ENV PYTHONPATH=$FENICS_PREFIX/lib/python3/dist-packages:$PYTHONPATH
-
-COPY --from=intermediate /tmp/apps .
+USER $DOCKER_USER
 
 # Install fesol
-RUN cd fesol && \
-    python3 setup.py install && \
-    cd .. && rm -rf /tmp/*
+RUN cd $DOCKER_HOME/project/fesol && \
+    python3 setup.py install --user
 
 WORKDIR $DOCKER_HOME
 USER root
