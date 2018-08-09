@@ -1,7 +1,7 @@
 # Builds a Docker image for OpenFOAM/PyOFM and CalculiX/PyCCX.
 
 # First, create an intermediate image to checkout git repository
-FROM unifem/cht-coupler:ccx-dev as intermediate
+FROM unifem/cht-coupler:ccx-mapper-dev as intermediate
 
 USER root
 WORKDIR /tmp
@@ -16,7 +16,7 @@ RUN git clone --depth=1 \
         apps/libofm/.git/config
 
 # Perform a second-stage by copying from intermediate image
-FROM unifem/cht-coupler:ccx-dev
+FROM unifem/cht-coupler:ccx-mapper-dev
 LABEL maintainer "Xiangmin Jiao <xmjiao@gmail.com>"
 
 USER root

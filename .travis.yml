@@ -11,7 +11,7 @@ before_script:
 script:
   - './ci-util/build-docker.sh : : --build-arg BB_TOKEN=$BB_TOKEN --squash=true &&
      docker tag unifem/cht-coupler:$TRAVIS_BRANCH paralab/cht-coupler:$TRAVIS_BRANCH &&
-     docker tag unifem/cht-coupler:$TRAVIS_BRANCH paralab/cht-coupler:level3a &&
+     docker tag unifem/cht-coupler:$TRAVIS_BRANCH paralab/cht-coupler:level3b &&
      docker push paralab/cht-coupler'
 
 after_success:
