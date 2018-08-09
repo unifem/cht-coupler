@@ -2,7 +2,7 @@
 # and install them into system directories.
 
 # First, create an intermediate image to checkout git repository
-FROM unifem/cht-coupler:ccx-bin as intermediate
+FROM unifem/cht-coupler:ccx-mapper-bin as intermediate
 
 USER root
 WORKDIR /tmp
@@ -17,7 +17,7 @@ RUN git clone --depth=1 \
         apps/libofm/.git/config
 
 # Perform a second-stage by copying from intermediate image
-FROM unifem/cht-coupler:ccx-bin
+FROM unifem/cht-coupler:ccx-mapper-bin
 LABEL maintainer "Xiangmin Jiao <xmjiao@gmail.com>"
 
 USER root
