@@ -2,7 +2,7 @@
 # into user directories.
 
 # First, create an intermediate image to checkout git repository
-FROM unifem/cht-coupler:dev-base as intermediate
+FROM unifem/cht-coupler:ovt-dev as intermediate
 
 USER root
 WORKDIR /tmp
@@ -23,7 +23,7 @@ RUN git clone --depth=1 \
         apps/pyccx/.git/config
 
 # Perform a second-stage by copying from intermediate image
-FROM unifem/cht-coupler:dev-base
+FROM unifem/cht-coupler:ovt-dev
 LABEL maintainer "Xiangmin Jiao <xmjiao@gmail.com>"
 
 USER root
