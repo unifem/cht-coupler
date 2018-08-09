@@ -40,13 +40,12 @@ USER $DOCKER_USER
 WORKDIR $DOCKER_HOME/project
 
 # Build libofm and pyofm
-RUN echo ". /opt/openfoam5/etc/bashrc\n./configure --python\n./Allwmake\n" > \
-        libofm/install.sh && \
-    cd $DOCKER_HOME/project/libofm && \
-    bash ./install.sh && \
+RUN cd $DOCKER_HOME/project/libofm && \
+    bash -c ". /opt/openfoam5/etc/bashrc && ./configure --python && ./Allwmake" && \
     cd $DOCKER_HOME/project/libofm/python && \
-    python3 setup.py install --user && \
-    $DOCKER_HOME/project/libofm/Allwclean python
+    bash -c ". /opt/openfoam5/etc/bashrc && python3 setup.py install --user" && \
+    cd $DOCKER_HOME/project/libofm && \
+    bash -c ". /opt/openfoam5/etc/bashrc && ./Allwclean python"
 
 WORKDIR $DOCKER_HOME
 USER root
