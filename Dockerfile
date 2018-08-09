@@ -77,7 +77,8 @@ ENV PXX_PREFIX=$DOCKER_HOME/project/A++P++
 
 # Download A++ and P++; compile A++ and P++
 # Note that P++ must be in the source tree, or Overture would fail to compile
-RUN cd $DOCKER_HOME/project && \
+RUN mkdir -p $DOCKER_HOME/project && \
+    cd $DOCKER_HOME/project && \
     git clone --depth 1 https://github.com/unifem/aplusplus.git A++P++ && \
     cd A++P++ && \
     ./configure --enable-SHARED_LIBS --prefix=$AXX_PREFIX && \
