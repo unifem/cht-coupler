@@ -3,7 +3,7 @@
 # The installation procedure follows the (somewhat-oudated) Guide at
 # See http://www.overtureframework.org/documentation/install.pdf
 
-FROM unifem/cht-coupler:base
+FROM unifem/cht-coupler:dev-base
 LABEL maintainer "Xiangmin Jiao <xmjiao@gmail.com>"
 
 USER root
@@ -72,12 +72,12 @@ RUN cd /tmp && \
 
 USER $DOCKER_USER
 WORKDIR $DOCKER_HOME
-ENV AXX_PREFIX=$DOCKER_HOME/A++P++.bin
-ENV PXX_PREFIX=$DOCKER_HOME/A++P++
+ENV AXX_PREFIX=$DOCKER_HOME/project/A++P++.bin
+ENV PXX_PREFIX=$DOCKER_HOME/project/A++P++
 
 # Download A++ and P++; compile A++ and P++
 # Note that P++ must be in the source tree, or Overture would fail to compile
-RUN cd $DOCKER_HOME && \
+RUN cd $DOCKER_HOME/project && \
     git clone --depth 1 https://github.com/unifem/aplusplus.git A++P++ && \
     cd A++P++ && \
     ./configure --enable-SHARED_LIBS --prefix=$AXX_PREFIX && \
