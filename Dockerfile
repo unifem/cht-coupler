@@ -16,7 +16,7 @@ RUN git clone --depth=1 \
         apps/pyovcg/.git/config
 
 # Perform a second-stage by copying from intermediate image
-FROM unifem/cht-coupler:ovt-frw-dev
+FROM unifem/cht-coupler:ovt-frw-mapper-dev
 LABEL maintainer "Xiangmin Jiao <xmjiao@gmail.com>"
 
 USER root
