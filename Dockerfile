@@ -90,7 +90,7 @@ ARG BIN_SUF=
 # Compile overflow with MPI
 # https://overflow.larc.nasa.gov/files/2016/02/Chapter_2.pdf
 RUN cd $DOCKER_HOME/project/overflow && \
-    ./makeall$MAKE_SUF gfortran && \
+    ./makeall$MAKE_SUF gfortran F90FLAGS=-g CFLAGS=-g && \
     \
     echo "export PATH=$DOCKER_HOME/overflow/bin$BIN_SUF:\$PATH:." >> \
         $DOCKER_HOME/.profile
