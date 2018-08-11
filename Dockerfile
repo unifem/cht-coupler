@@ -95,5 +95,13 @@ RUN cd /tmp/fesol && \
     python3 setup.py install && \
     rm -rf /tmp/fesol
 
+USER $DOCKER_USER
 WORKDIR $DOCKER_HOME
+
+# Download Jupyter Notebook driver routines
+RUN mkdir -p project && \
+    cd project && \
+    curl -s -L https://github.com/chiao45/ovt_fenics_notebooks/archive/master.zip | \
+        bsdtar -zxvf - --strip-components 1 ovt_fenics_notebooks-master/notebooks
+
 USER root
