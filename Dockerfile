@@ -49,5 +49,13 @@ RUN cd /tmp/libcalculix && \
     python3 setup.py install && \
     cd .. && rm -rf /tmp/*
 
+USER $DOCKER_USER
 WORKDIR $DOCKER_HOME
+
+# Download Jupyter Notebook driver routines
+RUN mkdir -p project && \
+    cd project && \
+    curl -s -L https://github.com/chiao45/ovt_ccx_notebooks/archive/master.zip | \
+        bsdtar -zxvf - --strip-components 1 ovt_ccx_notebooks-master/notebooks
+
 USER root
