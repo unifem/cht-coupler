@@ -24,8 +24,6 @@ LABEL maintainer "Xiangmin Jiao <xmjiao@gmail.com>"
 USER root
 WORKDIR /tmp
 
-COPY --from=intermediate /tmp/apps .
-
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         libboost-filesystem-dev \
@@ -92,6 +90,8 @@ RUN git clone --depth 1 --branch trilinos-release-${TRILINOS_VERSION} \
     make install && \
     \
     rm -rf /tmp/*
+
+COPY --from=intermediate /tmp/apps .
 
 # Install pydtk2
 # make sure to add env CC=mpicxx
