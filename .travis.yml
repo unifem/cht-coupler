@@ -18,6 +18,7 @@ script:
          --build-arg PEG_REPO=$PEG_REPO
          --build-arg CGT_REPO=$CGT_REPO
          --build-arg PLT_REPO=$PLT_REPO
+         --build-arg NB_REPO=$NB_REPO
          --build-arg MAKE_SUF=$MAKE_SUF
          --build-arg BIN_SUF=$BIN_SUF --squash'
 

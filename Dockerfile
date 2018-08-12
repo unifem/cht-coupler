@@ -15,6 +15,7 @@ RUN git clone --depth=1 ${OVF_REPO} apps/overflow 2> /dev/null && \
     git clone --depth=1 ${PEG_REPO} apps/pegasus5 2> /dev/null && \
     git clone --depth=1 ${CGT_REPO} apps/chimera2 2> /dev/null && \
     git clone --depth=1 ${PLT_REPO} apps/plot3d4 2> /dev/null && \
+    git clone --depth=1 ${NB_REPO}  apps/ovf-ccx-notebooks 2> /dev/null && \
     perl -e 's/https:\/\/[\w:\.]+@([\w\.]+)\//git\@$1:/' -p -i \
         apps/*/.git/config
 
@@ -80,7 +81,6 @@ WORKDIR $DOCKER_HOME
 
 COPY --from=intermediate /tmp/apps $DOCKER_HOME/project
 RUN chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME
-
 
 USER $DOCKER_USER
 
