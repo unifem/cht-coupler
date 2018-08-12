@@ -44,9 +44,8 @@ RUN cd /tmp/libcalculix && \
     \
     cd pyccx && \
     python3 setup.py install && \
-    cd .. && rm -rf /tmp/*
+    cd .. && rm -rf /tmp/* && \
+    chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME
 
-USER $DOCKER_USER
 WORKDIR $DOCKER_HOME
-
 USER root
