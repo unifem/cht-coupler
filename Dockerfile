@@ -14,6 +14,11 @@ RUN git clone --depth=1 \
     perl -e 's/https:\/\/[\w:\.]+@([\w\.]+)\//git\@$1:/' -p -i \
         apps/*/.git/config
 
+# Download Jupyter Notebook driver routines
+RUN curl -s -L https://${BB_TOKEN}@bitbucket.org/paralabc/ovt_fenics_notebooks/get/master.tar.gz | \
+        bsdtar -zxvf - --strip-components 1 "*/notebooks"
+
+
 # Perform a second-stage by copying from intermediate image
 FROM unifem/cht-coupler:ovt-dev
 LABEL maintainer "Xiangmin Jiao <xmjiao@gmail.com>"
@@ -89,19 +94,13 @@ RUN cd /tmp && \
     rm -rf /tmp/fenicstools
 
 COPY --from=intermediate /tmp/apps /tmp
+COPY --from=intermediate /tmp/notebooks $DOCKER_HOME/project/notebooks
 
 # Install fesol
 RUN cd /tmp/fesol && \
     python3 setup.py install && \
-    rm -rf /tmp/fesol
+    rm -rf /tmp/fesol && \
+    chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME
 
-USER $DOCKER_USER
 WORKDIR $DOCKER_HOME
-
-# Download Jupyter Notebook driver routines
-RUN mkdir -p project && \
-    cd project && \
-    curl -s -L https://github.com/chiao45/ovt_fenics_notebooks/archive/master.zip | \
-        bsdtar -zxvf - --strip-components 1 ovt_fenics_notebooks-master/notebooks
-
 USER root
