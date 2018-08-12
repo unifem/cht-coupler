@@ -12,7 +12,7 @@ ARG BB_TOKEN
 
 # Check out pydtk2 securely
 RUN git clone --depth=1 \
-        https://${BB_TOKEN}@bitbucket.org/qiaoc/pydtk2.git \
+        https://${BB_TOKEN}@bitbucket.org/paralabc/pydtk2.git \
         apps/pydtk2 2> /dev/null && \
     perl -e 's/https:\/\/[\w:\.]+@([\w\.]+)\//git\@$1:/' -p -i \
         apps/pydtk2/.git/config
