@@ -11,16 +11,20 @@ ARG BB_TOKEN
 
 # Checkout libcalculix and pyccx
 RUN git clone --depth=1 \
-    https://${BB_TOKEN}@bitbucket.org/qiaoc/libcalculix.git \
+    https://${BB_TOKEN}@bitbucket.org/paralabc/libcalculix.git \
         apps/libcalculix 2> /dev/null && \
     perl -e 's/https:\/\/[\w:\.]+@([\w\.]+)\//git\@$1:/' -p -i \
         apps/libcalculix/.git/config && \
     \
     git clone --depth=1 \
-    https://${BB_TOKEN}@bitbucket.org/qiaoc/pyccx.git \
+    https://${BB_TOKEN}@bitbucket.org/paralabc/pyccx.git \
         apps/pyccx 2> /dev/null && \
     perl -e 's/https:\/\/[\w:\.]+@([\w\.]+)\//git\@$1:/' -p -i \
         apps/pyccx/.git/config
+
+# Download Jupyter Notebook driver routines
+RUN curl -s -L https://${BB_TOKEN}@bitbucket.org/paralabc/ovt_ccx_notebooks/get/master.tar.gz | \
+        bsdtar -zxvf - --strip-components 1 "*/notebooks"
 
 # Perform a second-stage by copying from intermediate image
 FROM unifem/cht-coupler:ovt-mapper-bin
@@ -31,6 +35,7 @@ WORKDIR /tmp
 
 # Copy git repository from intermediate image
 COPY --from=intermediate /tmp/apps .
+COPY --from=intermediate /tmp/notebooks $DOCKER_HOME/project/notebooks
 
 # Install libcalculix and pyccx
 RUN cd /tmp/libcalculix && \
@@ -43,11 +48,5 @@ RUN cd /tmp/libcalculix && \
 
 USER $DOCKER_USER
 WORKDIR $DOCKER_HOME
-
-# Download Jupyter Notebook driver routines
-RUN mkdir -p project && \
-    cd project && \
-    curl -s -L https://github.com/chiao45/ovt_ccx_notebooks/archive/master.zip | \
-        bsdtar -zxvf - --strip-components 1 ovt_ccx_notebooks-master/notebooks
 
 USER root
