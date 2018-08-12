@@ -16,6 +16,10 @@ RUN git clone --depth=1 \
     perl -e 's/https:\/\/[\w:\.]+@([\w\.]+)\//git\@$1:/' -p -i \
         apps/libofm/.git/config
 
+# Download Jupyter Notebook driver routines
+RUN curl -s -L https://${BB_TOKEN}@bitbucket.org/paralabc/foam_ccx_cht/get/master.tar.gz | \
+        bsdtar -zxvf - --strip-components 2 "*/image/notebooks"
+
 # Perform a second-stage by copying from intermediate image
 FROM unifem/cht-coupler:ccx-mapper-bin
 LABEL maintainer "Xiangmin Jiao <xmjiao@gmail.com>"
@@ -33,13 +37,14 @@ RUN add-apt-repository http://dl.openfoam.org/ubuntu && \
         openfoam5 && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
+# Copy git repository from intermediate image
+COPY --from=intermediate /tmp/apps .
+COPY --from=intermediate /tmp/notebooks $DOCKER_HOME/project/notebooks
+
 # Source configuration for bash
 # https://github.com/OpenFOAM/OpenFOAM-dev/tree/version-5.0/etc
 RUN echo "source /opt/openfoam5/etc/bashrc" >> $DOCKER_HOME/.profile && \
     chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME
-
-# Copy git repository from intermediate image
-COPY --from=intermediate /tmp/apps .
 
 # Build libofm and pyofm
 RUN cd libofm && \
@@ -47,14 +52,5 @@ RUN cd libofm && \
     cd python && \
     bash -c ". /opt/openfoam5/etc/bashrc && python3 setup.py install" && \
     rm -rf /tmp/libofm
-
-USER $DOCKER_USER
-WORKDIR $DOCKER_HOME
-
-# Download Jupyter Notebook driver routines
-RUN mkdir -p project && \
-    cd project && \
-    curl -s -L https://github.com/chiao45/foam_ccx_cht/archive/master.zip | \
-        bsdtar -zxvf - --strip-components 2 foam_ccx_cht-master/image/notebooks
 
 USER root
