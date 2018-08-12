@@ -93,7 +93,8 @@ RUN cd $DOCKER_HOME/project/overflow && \
     ./makeall$MAKE_SUF gfortran F90FLAGS=-g CFLAGS=-g && \
     \
     echo "export PATH=$DOCKER_HOME/overflow/bin$BIN_SUF:\$PATH:." >> \
-        $DOCKER_HOME/.profile
+        $DOCKER_HOME/.profile && \
+    echo "export OMP_NUM_THREADS=\$(nproc)" >> $DOCKER_HOME/.profile        
 
 # Compile pagasus5 with MPI
 # https://www.nas.nasa.gov/publications/software/docs/pegasus5/s
