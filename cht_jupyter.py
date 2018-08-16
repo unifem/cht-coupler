@@ -18,10 +18,9 @@ import os
 owner = "paralab"
 proj = "cht-coupler"
 image = owner + '/' + proj
-tag = ""
 projdir = "project"
-workdir = "shared"
-volume = tag
+workdir = "project"
+volume = '_DEFAULT_'
 config = proj + '_config'
 
 
@@ -32,6 +31,7 @@ def parse_args(description):
 
     # Process command-line arguments
     parser = argparse.ArgumentParser(description=description)
+    tag = "latest"
 
     parser.add_argument('-i', '--image',
                         help='The Docker image to use. ' +
@@ -45,7 +45,7 @@ def parse_args(description):
 
     parser.add_argument('-v', '--volume',
                         help='A data volume to be mounted at ~/" + projdir + ". ' +
-                        'The default is ' + proj + '_project.',
+                        'The default is ' + proj + '_<tag>_project.',
                         default=volume)
 
     parser.add_argument('-w', '--workdir',
@@ -115,6 +115,12 @@ def parse_args(description):
             pass
         else:
             args.image += ':' + args.tag
+            tag = args.tag
+    else:
+        tag = args[args.image.find(':')+1:]
+
+    if args.volume == '_DEFAULT_':
+        args.volume = proj + '_' + tag + '_project'
 
     return args
 
