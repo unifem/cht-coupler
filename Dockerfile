@@ -92,7 +92,7 @@ ARG BIN_SUF=
 RUN cd $DOCKER_HOME/project/overflow && \
     ./makeall$MAKE_SUF gfortran F90FLAGS=-g CFLAGS=-g && \
     \
-    echo "export PATH=$DOCKER_HOME/overflow/bin$BIN_SUF:\$PATH:." >> \
+    echo "export PATH=$DOCKER_HOME/overflow/project/bin$BIN_SUF:\$PATH:." >> \
         $DOCKER_HOME/.profile && \
     echo "export OMP_NUM_THREADS=\$(nproc)" >> $DOCKER_HOME/.profile        
 
@@ -114,7 +114,7 @@ RUN cd $DOCKER_HOME/project/chimera2 && \
     make CMD=install && \
     make clean && \
     \
-    echo "export PATH=$DOCKER_HOME/chimera2/bin$MAKE_SUF:\$PATH" >> \
+    echo "export PATH=$DOCKER_HOME/project/chimera2/bin$MAKE_SUF:\$PATH" >> \
         $DOCKER_HOME/.profile
 
 # Compile plot3d; Do not enable CGNS
@@ -123,7 +123,7 @@ RUN cd $DOCKER_HOME/project/plot3d4 && \
     make && \
     make clean && \
     \
-    echo "export PATH=$DOCKER_HOME/plot3d4/bin:\$PATH" >> \
+    echo "export PATH=$DOCKER_HOME/project/plot3d4/bin:\$PATH" >> \
         $DOCKER_HOME/.profile
 
 WORKDIR $DOCKER_HOME
