@@ -28,7 +28,7 @@ RUN sh -c "curl -s http://dl.openfoam.org/gpg.key | apt-key add -" && \
     add-apt-repository http://dl.openfoam.org/ubuntu && \
     apt-get update && \
     apt-get install -y --no-install-recommends \
-        openfoam5 && \
+        openfoam5 paraviewopenfoam54 && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Source configuration for bash
