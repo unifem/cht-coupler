@@ -110,7 +110,7 @@ RUN apt-get update && \
 
 # Install CGNS from source with parallel enabled
 RUN cd /tmp && \
-    git clone --depth=1 -b master https://github.com/CGNS/CGNS.git && \
+    git clone --depth=1 -b master https://github.com/unifem/CGNS.git && \
     cd CGNS/src && \
     export CC="mpicc" && \
     export LIBS="-Wl,--no-as-needed -ldl -lz -lsz -lpthread" && \
