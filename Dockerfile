@@ -26,7 +26,7 @@ RUN mkdir -p project && cd project && \
         --enable-shared=yes \
         --with-blas=-lopenblas \
         --with-lapack=-lopenblas \
-        --with-scotch=/usr/lib \
+        --with-scotch=/usr/lib/x86_64-linux-gnu \
         --with-metis=/usr/lib/x86_64-linux-gnu \
         --with-eigen3=/usr/include/eigen3 \
         --with-x \
