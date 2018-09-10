@@ -30,8 +30,8 @@ WORKDIR /tmp
 # Install OpenFOAM 5.0 (https://openfoam.org/download/5-0-ubuntu/),
 # and configure it for user
 # https://github.com/OpenFOAM/OpenFOAM-dev/tree/version-5.0/etc
-RUN add-apt-repository http://dl.openfoam.org/ubuntu && \
-    sh -c "curl -s http://dl.openfoam.org/gpg.key | apt-key add -" && \
+RUN sh -c "curl -s http://dl.openfoam.org/gpg.key | apt-key add -" && \
+    add-apt-repository http://dl.openfoam.org/ubuntu && \
     apt-get update && \
     apt-get install -y --no-install-recommends \
         openfoam5 \
