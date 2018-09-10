@@ -36,7 +36,7 @@ RUN apt-get update && \
         pkg-config \
         ccache \
         \
-        libscalapack-openmpi1 libscalapack-mpi-dev \
+        libscalapack-openmpi libscalapack-mpi-dev \
         libsuperlu-dev \
         libsuitesparse-dev \
         libhypre-dev \
