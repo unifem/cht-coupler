@@ -79,7 +79,7 @@ RUN apt-get update && \
       rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Install FEniCS
-RUN add-apt-repository ppa:fenics-packages/fenics-2017.2.0 && \
+RUN add-apt-repository ppa:fenics-packages/fenics && \
     apt-get update && \
     apt-get install -y --no-install-recommends fenics python3-mshr && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
