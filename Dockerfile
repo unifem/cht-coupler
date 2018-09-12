@@ -3,7 +3,7 @@
 # The installation procedure follows the (somewhat-oudated) Guide at
 # See http://www.overtureframework.org/documentation/install.pdf
 
-FROM unifem/cht-coupler:ovt-base-mapper-bin
+FROM unifem/cht-coupler:ovt-base-mapper-dev
 LABEL maintainer "Xiangmin Jiao <xmjiao@gmail.com>"
 
 USER $DOCKER_USER
