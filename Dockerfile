@@ -1,4 +1,4 @@
-# Builds a Docker image with DataTransferKit and PyDTK
+# Builds a Docker image with DataTransferKit, PyDTK2, and ParPyDTK2
 # and install them into user directories.
 
 # First, create an intermediate image to checkout git repository
@@ -10,12 +10,18 @@ WORKDIR /tmp
 
 ARG BB_TOKEN
 
-# Check out pydtk2 securely
+# Check out PyDTK2 and ParPyDTK2 securely
 RUN git clone --depth=1 \
         https://${BB_TOKEN}@bitbucket.org/paralabc/pydtk2.git \
         apps/pydtk2 2> /dev/null && \
     perl -e 's/https:\/\/[\w:\.]+@([\w\.]+)\//git\@$1:/' -p -i \
         apps/pydtk2/.git/config
+
+RUN git clone --depth=1 --branch parallel \
+        https://${BB_TOKEN}@bitbucket.org/paralabc/pydtk2.git \
+        apps/parpydtk2 2> /dev/null && \
+    perl -e 's/https:\/\/[\w:\.]+@([\w\.]+)\//git\@$1:/' -p -i \
+        apps/parpydtk2/.git/config
 
 # Perform a second-stage by copying from intermediate image
 FROM unifem/cht-coupler:meshdb-dev
@@ -49,7 +55,7 @@ ARG DTK_VERSION=2.0
 RUN git clone --depth 1 --branch trilinos-release-${TRILINOS_VERSION} \
         https://github.com/trilinos/Trilinos.git && \
     cd Trilinos && \
-    git clone --depth 1 --branch dtk-${DTK_VERSION} \
+    git clone --depth 1 --branch awls \
         https://github.com/unifem/DataTransferKit.git && \
     mkdir build && cd build && \
     cmake \
@@ -94,10 +100,13 @@ RUN git clone --depth 1 --branch trilinos-release-${TRILINOS_VERSION} \
     make install && \
     make clean
 
-# make sure to add env CC=mpicxx
+# install PyDTK2 and ParPyDTK2 locally
 RUN cd $DOCKER_HOME/project/pydtk2 && \
     env CC=mpicxx python3 setup.py install --user && \
-    python3 setup.py clean --all
+    python3 setup.py clean --all && \
+    \
+    cd $DOCKER_HOME/project/parpydtk2 && \
+    pip3 install . --user
 
 WORKDIR $DOCKER_HOME
 USER root
