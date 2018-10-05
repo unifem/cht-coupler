@@ -28,12 +28,10 @@ RUN cd /tmp && \
         --with-lapack=-lopenblas \
         --with-scotch=/usr/lib/x86_64-linux-gnu \
         --with-metis=/usr/lib/x86_64-linux-gnu \
-        --with-eigen3=/usr/include/eigen3 \
         --with-x \
-        --with-cgns \
         --with-netcdf \
-        --with-hdf5=/usr/lib/hdf5-openmpi \
-        --with-hdf5-ldflags="-L/usr/lib/hdf5-openmpi/lib" \
+        --with-hdf5=/usr/lib/hdf5-serial \
+        --with-hdf5-ldflags="-L/usr/lib/hdf5-serial/lib" \
         --enable-ahf=yes \
         --enable-tools=yes && \
     make -j2 && make install && \
