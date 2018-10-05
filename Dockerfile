@@ -1,6 +1,5 @@
-# Builds a Docker image with OpenMPI v2.x, Python3, Jupyter Notebook,
-# MOAB/pyMOAB, CGNS/pyCGNS and Paraview. CGNS and MOAB are compiled with 
-# OpenMPI v2.x for parallel support. OpenMPI is patched to work with dlopen.
+# Builds a Docker image with OpenMPI v2.1, Python3 and Jupyter Notebook.
+# OpenMPI is patched to work with dlopen.
 #
 # Authors:
 # Xiangmin Jiao <xmjiao@gmail.com>
@@ -31,7 +30,6 @@ RUN apt-get update && \
         patchelf \
         openmpi-bin libopenmpi-dev \
         libhdf5-100 libhdf5-dev hdf5-tools \
-        libhdf5-openmpi-100 libhdf5-openmpi-dev \
         libnetcdf-dev netcdf-bin \
         libmetis5 libmetis-dev \
         libopenblas-base libopenblas-dev \
@@ -39,6 +37,7 @@ RUN apt-get update && \
         libeigen3-dev \
         python3-dev \
         python3-mpi4py \
+        python3-h5py \
         swig3.0 \
         ttf-dejavu \
         tk-dev \
@@ -48,9 +47,6 @@ RUN apt-get update && \
     \
     \
     /tmp/fix_ompi_dlopen.sh && \
-    mkdir -p /usr/lib/hdf5-openmpi && \
-    ln -s -f /usr/include/hdf5/openmpi /usr/lib/hdf5-openmpi/include && \
-    ln -s -f /usr/lib/x86_64-linux-gnu/hdf5/openmpi /usr/lib/hdf5-openmpi/lib && \
     \
     mkdir -p /usr/lib/hdf5-serial && \
     ln -s -f /usr/include/hdf5/serial /usr/lib/hdf5-serial/include && \
@@ -76,14 +72,9 @@ RUN apt-get update && \
           ply \
           pytest \
           six \
-          PyQt5 \
-          spyder \
           \
           urllib3 \
-          requests \
           pylint \
-          progressbar2 \
-          PyDrive \
           \
           ipython \
           jupyter \
@@ -107,28 +98,6 @@ RUN apt-get update && \
     touch $DOCKER_HOME/.log/jupyter.log && \
     chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-
-# Install CGNS from source with parallel enabled
-RUN cd /tmp && \
-    git clone --depth=1 -b master https://github.com/unifem/CGNS.git && \
-    cd CGNS/src && \
-    export CC="mpicc" && \
-    export LIBS="-Wl,--no-as-needed -ldl -lz -lsz -lpthread" && \
-    ./configure --enable-64bit --with-zlib --with-hdf5=/usr/lib/hdf5-openmpi \
-        --enable-parallel --enable-cgnstools --enable-lfs --enable-shared && \
-    sed -i 's/TKINCS =/TKINCS = -I\/usr\/include\/tcl/' cgnstools/make.defs && \
-    make -j2 && make install && \
-    rm -rf /tmp/CGNS
-
-# Install pyCGNS from source
-RUN cd /tmp && \
-    git clone --depth=1 -b master https://github.com/unifem/pyCGNS.git && \
-    cd pyCGNS && \
-    python3 setup.py build \
-        --includes=/usr/include/hdf5/openmpi:/usr/include/openmpi \
-        --libraries=/usr/lib/x86_64-linux-gnu/hdf5/openmpi && \
-    python3 setup.py install && \
-    rm -rf /tmp/pyCGNS
 
 WORKDIR $DOCKER_HOME
 USER root
