@@ -26,6 +26,7 @@ RUN cd /tmp && \
         --enable-shared=yes \
         --with-blas=-lopenblas \
         --with-lapack=-lopenblas \
+        --with-eigen3=off \
         --with-scotch=/usr/lib/x86_64-linux-gnu \
         --with-metis=/usr/lib/x86_64-linux-gnu \
         --enable-ahf=yes \
