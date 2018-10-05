@@ -1,0 +1,15 @@
+# This file will be sourced by ~/.zprofile in singularity image
+
+if [ -e $DOCKER_HOME/.local/bin ]; then
+    export PATH=$DOCKER_HOME/.local/bin:$PATH
+fi
+
+if [ -e $DOCKER_HOME/.local/lib ]; then
+    export LD_LIBRARY_PATH=$DOCKER_HOME/.local/lib:$LD_LIBRARY_PATH
+fi
+
+PYTHON3_VERSION="3.$(python3 --version | cut -f2 -d.)"
+
+if [ -e $DOCKER_HOME/.local/lib/python${PYTHON3_VERSION}/site-packages ]; then
+    export PYTHONPATH=$DOCKER_HOME/.local/lib/python${PYTHON3_VERSION}/site-packages:$PYTHONPATH
+fi
