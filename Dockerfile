@@ -15,6 +15,11 @@ RUN git clone --depth=1 \
     perl -e 's/https:\/\/[\w:\.]+@([\w\.]+)\//git\@$1:/' -p -i \
         apps/libofm/.git/config
 
+# Download Jupyter Notebook driver routines
+RUN curl -s -L https://${BB_TOKEN}@bitbucket.org/paralabc/foam_ccx_cht/get/master.tar.gz | \
+        bsdtar -zxvf - --strip-components 2 "*/image/notebooks"
+
+
 # Perform a second-stage by copying from intermediate image
 FROM unifem/cht-coupler:ccx-mapper-dev
 LABEL maintainer "Xiangmin Jiao <xmjiao@gmail.com>"
@@ -22,6 +27,7 @@ LABEL maintainer "Xiangmin Jiao <xmjiao@gmail.com>"
 USER root
 
 COPY --from=intermediate /tmp/apps $DOCKER_HOME/project
+COPY --from=intermediate /tmp/notebooks $DOCKER_HOME/project/notebooks
 
 # Install OpenFOAM 5.0 (https://openfoam.org/download/5-0-ubuntu/),
 RUN sh -c "curl -s http://dl.openfoam.org/gpg.key | apt-key add -" && \
