@@ -86,11 +86,9 @@ RUN git clone --depth 1 --branch trilinos-release-${TRILINOS_VERSION} \
         -DTPL_BLAS_LIBRARIES=/usr/lib/x86_64-linux-gnu/libopenblas.so \
         -DTPL_ENABLE_LAPACK:BOOL=ON \
         -DTPL_LAPACK_LIBRARIES=/usr/lib/x86_64-linux-gnu/libopenblas.so \
-        -DTPL_ENABLE_Eigen:BOOL=ON \
-        -DTPL_Eigen_INCLUDE_DIRS=/usr/include/eigen3 \
         -DTrilinos_ENABLE_DataTransferKit=ON \
         -DDataTransferKit_ENABLE_DBC=ON \
-        -DDataTransferKit_ENABLE_TESTS=ON \
+        -DDataTransferKit_ENABLE_TESTS=OFF \
         -DDataTransferKit_ENABLE_EXAMPLES=OFF \
         -DDataTransferKit_ENABLE_ClangFormat=OFF \
         -DTPL_ENABLE_BoostLib:BOOL=OFF \
