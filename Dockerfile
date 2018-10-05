@@ -28,7 +28,6 @@ RUN cd /tmp && \
         --with-lapack=-lopenblas \
         --with-scotch=/usr/lib/x86_64-linux-gnu \
         --with-metis=/usr/lib/x86_64-linux-gnu \
-        --with-x \
         --enable-ahf=yes \
         --enable-tools=yes && \
     make -j2 && make install && \
