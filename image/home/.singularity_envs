@@ -1,0 +1,10 @@
+# This file will be sourced by ~/.profile in singularity image
+
+if [ "$HOME" != "$DOCKER_HOME" ]; then
+    PYTHON3_VERSION="3.$(python3 --version | cut -f2 -d.)"
+
+    if [ -e $DOCKER_HOME/.local/lib/python${PYTHON3_VERSION}/site-packages -a \
+        -z "$(echo $PYTHONPATH | grep $DOCKER_HOME/.local/lib/python${PYTHON3_VERSION}/site-packages)" ]; then
+        export PYTHONPATH=$DOCKER_HOME/.local/lib/python${PYTHON3_VERSION}/site-packages:$PYTHONPATH
+    fi
+fi
