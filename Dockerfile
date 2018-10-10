@@ -38,7 +38,7 @@ RUN apt-get update && \
         python3-dev \
         python3-mpi4py \
         python3-h5py \
-        swig3.0 \
+        swig swig3.0 \
         ttf-dejavu \
         tk-dev \
         libglu1-mesa-dev \
