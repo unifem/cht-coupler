@@ -26,14 +26,15 @@ RUN git clone --depth=1 \
 FROM unifem/cht-coupler:mapper-dev
 LABEL maintainer "Xiangmin Jiao <xmjiao@gmail.com>"
 
-USER root
+USER $DOCKER_USER
 WORKDIR $DOCKER_HOME
 
 # Copy git repository from intermediate image
 COPY --from=intermediate /tmp/apps project
 
 # Install libcalculix and pyccx
-RUN cd project/libcalculix && \
+RUN sudo chown -R $DOCKER_USER:$DOCKER_GROUP project && \
+    cd project/libcalculix && \
     make && \
     make PREFIX=$DOCKER_HOME/.local install && \
     make clean && \
