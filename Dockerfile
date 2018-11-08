@@ -21,7 +21,7 @@ RUN apt-get update && \
         cmake wget \
         bison \
         flex \
-        git \
+        git git-lfs \
         bash-completion \
         bsdtar \
         rsync \
