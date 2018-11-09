@@ -17,7 +17,7 @@ ADD image/bin /tmp
 # Use fix_ompi_dlopen.sh to fix dlopen issue with OpenMPI v2.x
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-        build-essential gfortran clang \
+        build-essential gfortran clang strace \
         cmake wget \
         bison \
         flex \
