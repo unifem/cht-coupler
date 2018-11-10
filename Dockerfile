@@ -10,13 +10,7 @@ WORKDIR /tmp
 ARG BB_TOKEN
 
 # Checkout libcalculix and pyccx
-RUN git clone --depth=1 \
-    https://${BB_TOKEN}@bitbucket.org/paralabc/libcalculix.git \
-        apps/libcalculix 2> /dev/null && \
-    perl -e 's/https:\/\/[\w:\.]+@([\w\.]+)\//git\@$1:/' -p -i \
-        apps/libcalculix/.git/config && \
-    \
-    git clone --depth=1 \
+RUN git clone --recurse-submodules --depth=1 \
     https://${BB_TOKEN}@bitbucket.org/paralabc/pyccx.git \
         apps/pyccx 2> /dev/null && \
     perl -e 's/https:\/\/[\w:\.]+@([\w\.]+)\//git\@$1:/' -p -i \
@@ -30,15 +24,11 @@ USER root
 WORKDIR /tmp
 
 # Copy git repository from intermediate image
-COPY --from=intermediate /tmp/apps .
+COPY --from=intermediate /tmp/apps /tmp
 
-# Install libcalculix and pyccx
-RUN cd /tmp/libcalculix && \
-    make && make install && \
-    cd .. && \
-    \
-    cd pyccx && \
-    python3 setup.py install && \
+# Install pyccx
+RUN cd /tmp/pyccx && \
+    ./build.sh PREFIX=/usr/local && \
     cd .. && rm -rf /tmp/*
 
 WORKDIR $DOCKER_HOME
