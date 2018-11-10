@@ -19,6 +19,14 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         build-essential gfortran clang strace \
         cmake wget \
+        libboost-filesystem-dev \
+        libboost-iostreams-dev \
+        libboost-math-dev \
+        libboost-program-options-dev \
+        libboost-system-dev \
+        libboost-thread-dev \
+        libboost-timer-dev \
+        doxygen \
         bison \
         flex \
         git git-lfs \
