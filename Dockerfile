@@ -27,23 +27,12 @@ RUN cd /tmp && \
         --with-blas=-lopenblas \
         --with-lapack=-lopenblas \
         --with-eigen3=off \
-        --with-scotch=/usr/lib/x86_64-linux-gnu \
-        --with-metis=/usr/lib/x86_64-linux-gnu \
-        --enable-ahf=yes \
-        --enable-tools=yes && \
+        --with-scotch=off \
+        --with-metis=off && \
     make -j2 && make install && \
-    \
-    cd pymoab && \
-    python3 setup.py install && \
     rm -rf /tmp/moab
 
 ENV MOAB_ROOT=/usr/local
-
-# Install paraview
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-        paraview && \
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 WORKDIR $DOCKER_HOME
 USER root
