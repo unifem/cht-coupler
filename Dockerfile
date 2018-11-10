@@ -20,7 +20,7 @@ RUN git clone --recurse-submodules --depth=1 \
 FROM unifem/cht-coupler:dev-base
 LABEL maintainer "Xiangmin Jiao <xmjiao@gmail.com>"
 
-USER root
+USER $DOCKER_USER
 WORKDIR $DOCKER_HOME
 
 # Copy git repository from intermediate image
