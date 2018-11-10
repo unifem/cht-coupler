@@ -24,18 +24,6 @@ LABEL maintainer "Xiangmin Jiao <xmjiao@gmail.com>"
 USER root
 WORKDIR /tmp
 
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-        libboost-filesystem-dev \
-        libboost-iostreams-dev \
-        libboost-math-dev \
-        libboost-program-options-dev \
-        libboost-system-dev \
-        libboost-thread-dev \
-        libboost-timer-dev && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/* /tmp/*
-
 ARG TRILINOS_VERSION=12-12-1
 ARG DTK_VERSION=2.0
 
