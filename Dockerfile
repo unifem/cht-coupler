@@ -1,4 +1,4 @@
-# Builds a Docker image with DataTransferKit, PyDTK2, and ParPyDTK2.
+# Builds a Docker image with DataTransferKit and PyDTK2.
 # It requires meshdb.
 
 # First, create an intermediate image to checkout git repository
@@ -11,9 +11,8 @@ WORKDIR /tmp
 ARG BB_TOKEN
 
 # Check out pydtk2 securely
-RUN git clone --depth=1 \
-        https://${BB_TOKEN}@bitbucket.org/paralabc/pydtk2.git \
-        apps/pydtk2 2> /dev/null && \
+RUN git clone --depth=1 --branch parallle \
+        https://${BB_TOKEN}@bitbucket.org/paralabc/pydtk2.git apps/pydtk2 2> /dev/null && \
     perl -e 's/https:\/\/[\w:\.]+@([\w\.]+)\//git\@$1:/' -p -i \
         apps/pydtk2/.git/config
 
@@ -79,12 +78,10 @@ RUN git clone --depth 1 --branch trilinos-release-${TRILINOS_VERSION} \
 
 COPY --from=intermediate /tmp/apps .
 
-# Install pydtk2 and parpydtk2
-# make sure to add env CC=mpicxx
-RUN cd pydtk2 && \
-    env CC=mpicxx python3 setup.py install && \
-    cd .. && rm -rf pydtk2 && \
-    pip3 install parpydtk2
+# install pydtk2
+RUN cd $DOCKER_HOME/project/pydtk2 && \
+    CC=mpicxx PYDTK_MOAB_ROOT=/usr/local PYDTK_DTK_ROOT=/usr/local \
+    pip3 install --prefix=/usr/local .
 
 WORKDIR $DOCKER_HOME
 USER root
