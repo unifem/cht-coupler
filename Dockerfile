@@ -10,9 +10,8 @@ WORKDIR /tmp
 ARG BB_TOKEN
 
 # Checkout libcalculix and pyccx
-RUN git clone --recurse-submodules --depth=1 \
-    https://${BB_TOKEN}@bitbucket.org/paralabc/pyccx.git \
-        apps/pyccx 2> /dev/null && \
+RUN git clone --recurse --depth=1 \
+    https://${BB_TOKEN}@bitbucket.org/paralabc/pyccx.git apps/pyccx && \
     perl -e 's/https:\/\/[\w:\.]+@([\w\.]+)\//git\@$1:/' -p -i \
         apps/pyccx/.git/config
 
