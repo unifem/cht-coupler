@@ -10,7 +10,7 @@ LABEL maintainer "Xiangmin Jiao <xmjiao@gmail.com>"
 USER $DOCKER_USER
 WORKDIR $DOCKER_HOME
 
-# Install MOAB and pymoab from sources into system directories
+# Install MOAB from sources into user directories
 RUN mkdir -p project && cd project && \
     git clone --depth=1 https://bitbucket.org/fathomteam/moab.git && \
     cd moab && \
@@ -27,14 +27,9 @@ RUN mkdir -p project && cd project && \
         --with-blas=-lopenblas \
         --with-lapack=-lopenblas \
         --with-eigen3=off \
-        --with-scotch=/usr/lib/x86_64-linux-gnu \
-        --with-metis=/usr/lib/x86_64-linux-gnu \
-        --enable-ahf=yes \
-        --enable-tools=yes && \
-    make -j2 && make install && \
-    \
-    cd pymoab && \
-    python3 setup.py install --user
+        --with-scotch=off \
+        --with-metis=off && \
+    make -j2 && make install
 
 ENV MOAB_ROOT=$DOCKER_HOME/.local
 
