@@ -1,4 +1,4 @@
-# Builds a Docker image with DataTransferKit, PyDTK2, and ParPyDTK2
+# Builds a Docker image with DataTransferKit and PyDTK2
 # and install them into user directories.
 
 # First, create an intermediate image to checkout git repository
@@ -10,18 +10,12 @@ WORKDIR /tmp
 
 ARG BB_TOKEN
 
-# Check out PyDTK2 and ParPyDTK2 securely
-RUN git clone --depth=1 \
+# Check out PyDTK2 securely
+RUN git clone --depth=1 --branch parallel \
         https://${BB_TOKEN}@bitbucket.org/paralabc/pydtk2.git \
         apps/pydtk2 2> /dev/null && \
     perl -e 's/https:\/\/[\w:\.]+@([\w\.]+)\//git\@$1:/' -p -i \
         apps/pydtk2/.git/config
-
-RUN git clone --depth=1 --branch parallel \
-        https://${BB_TOKEN}@bitbucket.org/paralabc/pydtk2.git \
-        apps/parpydtk2 2> /dev/null && \
-    perl -e 's/https:\/\/[\w:\.]+@([\w\.]+)\//git\@$1:/' -p -i \
-        apps/parpydtk2/.git/config
 
 # Perform a second-stage by copying from intermediate image
 FROM unifem/cht-coupler:meshdb-dev
@@ -35,19 +29,6 @@ USER root
 # Build DataTransferKit
 # For options to control Trilinos, see
 # https://trilinos.org/oldsite/TrilinosBuildQuickRef.html#configuring-makefile-generator
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-        libboost-filesystem-dev \
-        libboost-iostreams-dev \
-        libboost-math-dev \
-        libboost-program-options-dev \
-        libboost-system-dev \
-        libboost-thread-dev \
-        libboost-timer-dev && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/* /tmp/* && \
-    chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME
-
 USER $DOCKER_USER
 ARG TRILINOS_VERSION=12-12-1
 ARG DTK_VERSION=2.0
@@ -98,13 +79,10 @@ RUN git clone --depth 1 --branch trilinos-release-${TRILINOS_VERSION} \
     make install && \
     make clean
 
-# install PyDTK2 and ParPyDTK2 locally
+# install PyDTK2 locally
 RUN cd $DOCKER_HOME/project/pydtk2 && \
-    env CC=mpicxx python3 setup.py install --user && \
-    python3 setup.py clean --all && \
-    \
-    cd $DOCKER_HOME/project/parpydtk2 && \
-    pip3 install . --user
-
+    CC=mpicxx PYDTK_MOAB_ROOT=$HOME/.local PYDTK_DTK_ROOT=$HOME/.local \
+    pip3 install --prefix=$HOME/.local .
+ 
 WORKDIR $DOCKER_HOME
 USER root
