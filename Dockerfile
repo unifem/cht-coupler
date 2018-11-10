@@ -26,9 +26,7 @@ RUN mkdir -p project && cd project && \
         --enable-shared=yes \
         --with-blas=-lopenblas \
         --with-lapack=-lopenblas \
-        --with-eigen3=off \
-        --with-scotch=off \
-        --with-metis=off && \
+        --with-eigen3=off && \
     make -j2 && make install
 
 ENV MOAB_ROOT=$DOCKER_HOME/.local
