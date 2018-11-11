@@ -7,11 +7,9 @@ FROM unifem/cht-coupler:mapper-dev as intermediate
 USER root
 WORKDIR /tmp
 
-ARG BB_TOKEN
-
 # Checkout libcalculix and pyccx
-COPY ssh $DOCKER_HOME/.ssh
-RUN git clone --recurse --depth=1 \
+COPY ssh /root/.ssh
+RUN git clone --recurse-submodules --depth=1 \
     git@bitbucket.org:paralabc/pyccx.git apps/pyccx
 
 # Perform a second-stage by copying from intermediate image
@@ -25,7 +23,8 @@ WORKDIR $DOCKER_HOME
 COPY --from=intermediate /tmp/apps project
 
 # Install pyccx
-RUN cd project/pyccx && \
+RUN sudo chown -R $DOCKER_USER:$DOCKER_GROUP project && \
+    cd project/pyccx && \
     ./build.sh PREFIX=$DOCKER_HOME/.local
 
 WORKDIR $DOCKER_HOME
