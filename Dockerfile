@@ -76,12 +76,13 @@ RUN git clone --depth 1 --branch trilinos-release-${TRILINOS_VERSION} \
     \
     rm -rf /tmp/*
 
-COPY --from=intermediate /tmp/apps .
+COPY --from=intermediate /tmp/apps /tmp
 
 # install pydtk2
-RUN cd $DOCKER_HOME/project/pydtk2 && \
+RUN cd /tmp/pydtk2 && \
     CC=mpicxx PYDTK_MOAB_ROOT=/usr/local PYDTK_DTK_ROOT=/usr/local \
-    pip3 install --prefix=/usr/local .
+    pip3 install --prefix=/usr/local . && \
+    cd .. && rm -rf /tmp/*
 
 WORKDIR $DOCKER_HOME
 USER root
