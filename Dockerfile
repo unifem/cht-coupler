@@ -7,13 +7,11 @@ FROM unifem/cht-coupler:dev-base as intermediate
 USER root
 WORKDIR /tmp
 
-COPY bitbucket_id_ecdsa $DOCKER_HOME/.ssh/bitbucket_id_ecdsa
-COPY ssh_config $DOCKER_HOME/.ssh/config
-
 # Checkout libcalculix and pyccx
+COPY ssh $DOCKER_HOME/.ssh
 RUN git clone --recurse --depth=1 \
     git@bitbucket.org:paralabc/pyccx.git apps/pyccx
-
+    
 # Perform a second-stage by copying from intermediate image
 FROM unifem/cht-coupler:dev-base
 LABEL maintainer "Xiangmin Jiao <xmjiao@gmail.com>"
