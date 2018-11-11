@@ -7,14 +7,10 @@ FROM unifem/cht-coupler:mapper-bin as intermediate
 USER root
 WORKDIR /tmp
 
-ARG BB_TOKEN
-
 # Checkout libcalculix and pyccx
-RUN git clone --recurse-submodules --depth=1 \
-    https://${BB_TOKEN}@bitbucket.org/paralabc/pyccx.git \
-        apps/pyccx 2> /dev/null && \
-    perl -e 's/https:\/\/[\w:\.]+@([\w\.]+)\//git\@$1:/' -p -i \
-        apps/pyccx/.git/config
+COPY ssh $DOCKER_HOME/.ssh
+RUN git clone --recurse --depth=1 \
+    git@bitbucket.org:paralabc/pyccx.git apps/pyccx
 
 # Perform a second-stage by copying from intermediate image
 FROM unifem/cht-coupler:mapper-bin
