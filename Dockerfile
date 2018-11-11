@@ -23,7 +23,8 @@ WORKDIR $DOCKER_HOME
 COPY --from=intermediate /tmp/apps project
 
 # Install pyccx
-RUN cd project/pyccx && \
+RUN sudo chown -R $DOCKER_USER:$DOCKER_GROUP project && \
+    cd project/pyccx && \
     ./build.sh PREFIX=$DOCKER_HOME/.local
 
 WORKDIR $DOCKER_HOME
