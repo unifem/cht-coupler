@@ -8,6 +8,8 @@ USER root
 WORKDIR /tmp
 
 COPY bitbucket_id_ecdsa $DOCKER_HOME/.ssh/bitbucket_id_ecdsa
+COPY ssh_config $DOCKER_HOME/.ssh/config
+
 # Checkout libcalculix and pyccx
 RUN git clone --recurse --depth=1 \
     git@bitbucket.org:paralabc/pyccx.git apps/pyccx
