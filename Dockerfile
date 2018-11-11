@@ -7,13 +7,10 @@ FROM unifem/cht-coupler:dev-base as intermediate
 USER root
 WORKDIR /tmp
 
-ARG BB_TOKEN
-
+COPY bitbucket_id_ecdsa $DOCKER_HOME/.ssh/bitbucket_id_ecdsa
 # Checkout libcalculix and pyccx
 RUN git clone --recurse --depth=1 \
-    https://${BB_TOKEN}@bitbucket.org/paralabc/pyccx.git apps/pyccx && \
-    perl -e 's/https:\/\/[\w:\.]+@([\w\.]+)\//git\@$1:/' -p -i \
-        apps/pyccx/.git/config
+    git@bitbucket.org:paralabc/pyccx.git apps/pyccx
 
 # Perform a second-stage by copying from intermediate image
 FROM unifem/cht-coupler:dev-base
