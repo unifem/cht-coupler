@@ -8,8 +8,8 @@ USER root
 WORKDIR /tmp
 
 # Checkout libcalculix and pyccx
-COPY ssh $DOCKER_HOME/.ssh
-RUN git clone --recurse --depth=1 \
+COPY ssh /root/.ssh
+RUN git clone --recurse-submodules --depth=1 \
     git@bitbucket.org:paralabc/pyccx.git apps/pyccx
 
 # Perform a second-stage by copying from intermediate image
@@ -23,7 +23,7 @@ WORKDIR /tmp
 COPY --from=intermediate /tmp/apps /tmp
 
 # Install pyccx
-RUN cd /tmp/pyccx && \
+RUN cd /tmp/pyccx && \ 
     ./build.sh PREFIX=/usr/local && \
     cd .. && rm -rf /tmp/*
 
