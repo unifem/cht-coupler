@@ -4,11 +4,11 @@
 # First, create an intermediate image to checkout git repository
 FROM unifem/cht-coupler:dev-base as intermediate
 
-USER $DOCKER_USER
+USER root
 WORKDIR /tmp
 
 # Checkout libcalculix and pyccx
-COPY --chown=$DOCKER_USER:$DOCKER_GROUP ssh $DOCKER_HOME/.ssh
+COPY ssh /root/.ssh
 RUN git clone --recurse-submodules --depth=1 \
     git@bitbucket.org:paralabc/pyccx.git apps/pyccx
     
@@ -20,7 +20,7 @@ USER $DOCKER_USER
 WORKDIR $DOCKER_HOME
 
 # Copy git repository from intermediate image
-COPY --from=intermediate --chown=$DOCKER_USER:$DOCKER_GROUP /tmp/apps project
+COPY --from=intermediate /tmp/apps project
 
 # Install pyccx
 RUN cd project/pyccx && \
