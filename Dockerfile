@@ -7,41 +7,25 @@ FROM unifem/cht-coupler:ovt-mapper-dev as intermediate
 USER root
 WORKDIR /tmp
 
-ARG BB_TOKEN
-
 # Checkout libcalculix and pyccx
-RUN git clone --depth=1 \
-    https://${BB_TOKEN}@bitbucket.org/paralabc/libcalculix.git \
-        apps/libcalculix 2> /dev/null && \
-    perl -e 's/https:\/\/[\w:\.]+@([\w\.]+)\//git\@$1:/' -p -i \
-        apps/libcalculix/.git/config && \
-    \
-    git clone --depth=1 \
-    https://${BB_TOKEN}@bitbucket.org/paralabc/pyccx.git \
-        apps/pyccx 2> /dev/null && \
-    perl -e 's/https:\/\/[\w:\.]+@([\w\.]+)\//git\@$1:/' -p -i \
-        apps/pyccx/.git/config
+COPY ssh /root/.ssh
+RUN git clone --recurse-submodules --depth=1 \
+    git@bitbucket.org:paralabc/pyccx.git apps/pyccx
 
 # Perform a second-stage by copying from intermediate image
 FROM unifem/cht-coupler:ovt-mapper-dev
 LABEL maintainer "Xiangmin Jiao <xmjiao@gmail.com>"
 
-USER root
+USER $DOCKER_USER
 WORKDIR $DOCKER_HOME
 
 # Copy git repository from intermediate image
 COPY --from=intermediate /tmp/apps project
 
-# Install libcalculix and pyccx
-RUN cd project/libcalculix && \
-    make && \
-    make PREFIX=$DOCKER_HOME/.local install && \
-    make clean && \
-    \
-    cd ../pyccx && \
-    sed -i -e "s/usr\/local/home\/$DOCKER_USER\/.local/g" setup.cfg && \
-    python3 setup.py install --user &&\
-    python3 setup.py clean --all
+# Install pyccx
+RUN sudo chown -R $DOCKER_USER:$DOCKER_GROUP project && \
+    cd project/pyccx && \
+    ./build.sh PREFIX=$DOCKER_HOME/.local
 
 WORKDIR $DOCKER_HOME
 USER root
