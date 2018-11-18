@@ -3,24 +3,13 @@ sudo: required
 language: python
 services: docker
 
-env:
-  - MAKE_SUF=_dp BIN_SUF=_dp TAGS=${TRAVIS_BRANCH},${TRAVIS_BRANCH}_dp,level4c
-  - MAKE_SUF=_sp BIN_SUF= TAGS=${TRAVIS_BRANCH}_sp
-
 before_script:
   - sudo echo '{"experimental":true}' | sudo tee /etc/docker/daemon.json
   - sudo service docker restart
   - git clone --depth=1 https://$GIT_TOKEN@github.com/xmjiao/ci-util.git 2> /dev/null
 
 script:
-  - './ci-util/build-docker.sh : paralab/cht-coupler:$TAGS
-         --build-arg OVF_REPO=$OVF_REPO
-         --build-arg PEG_REPO=$PEG_REPO
-         --build-arg CGT_REPO=$CGT_REPO
-         --build-arg PLT_REPO=$PLT_REPO
-         --build-arg NB_REPO=$NB_REPO
-         --build-arg MAKE_SUF=$MAKE_SUF
-         --build-arg BIN_SUF=$BIN_SUF --squash'
+  - './ci-util/build-docker.sh : paralab/cht-coupler:$TAGS --squash'
 
 after_success:
   - ./ci-util/trigger-via-api.sh

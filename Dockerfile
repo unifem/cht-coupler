@@ -1,131 +1,132 @@
-# Builds a Docker image for OVERFLOW and tools
+# Builds a Docker image for PyCHT
 
 # First, create an intermediate image to checkout git repository
-FROM unifem/cht-coupler:ccx-mapper-bin as intermediate
-ARG OVF_REPO
-ARG PEG_REPO
-ARG CGT_REPO
-ARG PLT_REPO
-ARG NB_REPO
+FROM x11vnc/desktop:18.04 as intermediate
 
 USER root
 WORKDIR /tmp
 
-# checkout repositories
-RUN git clone --depth=1 ${OVF_REPO} apps/overflow 2> /dev/null && \
-    git clone --depth=1 ${PEG_REPO} apps/pegasus5 2> /dev/null && \
-    git clone --depth=1 ${CGT_REPO} apps/chimera2 2> /dev/null && \
-    git clone --depth=1 ${PLT_REPO} apps/plot3d4 2> /dev/null && \
-    git clone --depth=1 ${NB_REPO}  apps/ovf-ccx-notebooks 2> /dev/null && \
-    perl -e 's/https:\/\/[\w:\.]+@([\w\.]+)\//git\@$1:/' -p -i \
-        apps/*/.git/config
+# Checkout libcalculix and pyccx
+COPY ssh /root/.ssh
+RUN git clone --recurse-submodules --depth=1 \
+    git@bitbucket.org:paralabc/pycht.git pycht
 
 # Perform a second-stage by copying from the intermediate image
-FROM unifem/cht-coupler:ccx-mapper-bin
+FROM x11vnc/desktop:18.04
 LABEL maintainer "Xiangmin Jiao <xmjiao@gmail.com>"
 
-USER root
+ADD image/home $DOCKER_HOME
+ADD image/bin /tmp
 
-WORKDIR /tmp
-
-ARG TCLTK_VERSION=8.5
-
-# Install system packages required by Chimera
-RUN apt-get update && \
+# Install system packages and jupyter-notebook.
+# Use fix_ompi_dlopen.sh to fix dlopen issue with OpenMPI v2.x
+RUN sh -c "curl -s http://dl.openfoam.org/gpg.key | apt-key add -" && \
+    add-apt-repository http://dl.openfoam.org/ubuntu && \
+    apt-get update && \
     apt-get install -y --no-install-recommends \
-        libtcl${TCLTK_VERSION} \
-        libtk${TCLTK_VERSION} \
-        tcl${TCLTK_VERSION}-dev \
-        tk${TCLTK_VERSION}-dev \
-        libgl1-mesa-dev \
-        libglu1-mesa \
-        libglu1-mesa-dev \
-        libxi-dev \
-        freeglut3 freeglut3-dev \
-        libxmu-dev \
-        python-dev \
-        python-numpy \
-        python-matplotlib \
-        python-mpi4py \
-        \
-        swig \
-        time \
-        grace \
-        gnuplot \
+        build-essential gfortran clang strace \
+        cmake wget \
+        libboost-filesystem-dev \
+        libboost-iostreams-dev \
+        libboost-math-dev \
+        libboost-program-options-dev \
+        libboost-system-dev \
+        libboost-thread-dev \
+        libboost-timer-dev \
+        doxygen \
+        bison \
+        flex \
+        git git-lfs \
+        bash-completion \
+        bsdtar \
+        rsync \
+        ccache \
+        automake autogen autoconf libtool \
+        patchelf \
+        openmpi-bin libopenmpi-dev \
+        libhdf5-100 libhdf5-dev hdf5-tools \
+        libnetcdf-dev netcdf-bin \
+        libmetis5 libmetis-dev \
+        libopenblas-base libopenblas-dev \
+        libptscotch-dev \
+        libeigen3-dev \
         python3-dev \
-        python3-numpy \
-        python3-matplotlib \
-        python3-mpi4py && \
+        python3-mpi4py \
+        python3-h5py \
+        swig swig3.0 \
+        ttf-dejavu \
+        tk-dev \
+        libglu1-mesa-dev \
+        libxmu-dev \
+        \
+        openfoam5 paraviewopenfoam54 && \
     apt-get clean && \
-    apt-get autoremove && \
+    \
+    \
+    /tmp/fix_ompi_dlopen.sh && \
+    \
+    mkdir -p /usr/lib/hdf5-serial && \
+    ln -s -f /usr/include/hdf5/serial /usr/lib/hdf5-serial/include && \
+    ln -s -f /usr/lib/x86_64-linux-gnu/hdf5/serial /usr/lib/hdf5-serial/lib && \
+    \
+    curl -O https://bootstrap.pypa.io/get-pip.py && \
+    python3 get-pip.py && \
+    pip3 install -U \
+          setuptools \
+          matplotlib \
+          sympy==1.1.1 \
+          scipy \
+          pandas \
+          nose \
+          sphinx \
+          breathe \
+          cython \
+          \
+          autopep8 \
+          flake8 \
+          pylint \
+          flufl.lock \
+          ply \
+          pytest \
+          six \
+          \
+          urllib3 \
+          pylint \
+          \
+          ipython \
+          jupyter \
+          jupyter_latex_envs \
+          jupyter_contrib_nbextensions \
+          ipywidgets && \
+    jupyter nbextension install --py --system \
+         widgetsnbextension && \
+    jupyter nbextension enable --py --system \
+         widgetsnbextension && \
+    jupyter-nbextension install --py --system \
+        latex_envs && \
+    jupyter-nbextension enable --py --system \
+        latex_envs && \
+    jupyter contrib nbextension install --system && \
+    jupyter nbextension enable spellchecker/main && \
+    \
+    curl -L https://github.com/hbin/top-programming-fonts/raw/master/install.sh | bash && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
+    \
+    touch $DOCKER_HOME/.log/jupyter.log && \
+    chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-ENV TCLDIR_INC=/usr/include/tcl${TCLTK_VERSION} \
-    TKDIR_INC=/usr/include/tk${TCLTK_VERSION} \
-    X11DIR_INC=/usr/include \
-    TCLDIR_SO=/usr/lib/x86_64-linux-gnu \
-    TKDIR_SO=/usr/lib/x86_64-linux-gnu \
-    X11DIR_SO=/usr/lib/x86_64-linux-gnu \
-    TCL_LIBRARY=/usr/share/tcltk/tcl${TCLTK_VERSION} \
-    TK_LIBRARY=/usr/share/tcltk/tk${TCLTK_VERSION} \
-    PYTHON_INC=/usr/include/python2.7 \
-    \
-    MPI_ROOT=/usr/lib/x86_64-linux-gnu/openmpi \
-    PYTHON_INCLUDE=/usr/include/python2.7 \
-    NUMPY_INCLUDE=/usr/include/python2.7/numpy \
-    PYTHON3_INCLUDE=/usr/include/python3.6 \
-    NUMPY3_INCLUDE=/usr/include/python3.6/numpy \
-    TIME=/usr/bin/time
-
 # Copy git repository from intermediate image
-WORKDIR $DOCKER_HOME
-
-COPY --from=intermediate /tmp/apps $DOCKER_HOME/project
-RUN chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME
+COPY --from=intermediate /tmp/pycht $DOCKER_HOME/pycht
 
 USER $DOCKER_USER
-
-ARG MAKE_SUF=_dp
-ARG BIN_SUF=
-
-# Compile overflow with MPI
-# https://overflow.larc.nasa.gov/files/2016/02/Chapter_2.pdf
-RUN cd $DOCKER_HOME/project/overflow && \
-    ./makeall$MAKE_SUF gfortran && \
-    \
-    echo "export PATH=$DOCKER_HOME/project/overflow/bin$BIN_SUF:\$PATH:." >> \
-        $DOCKER_HOME/.profile && \
-    echo "export OMP_NUM_THREADS=\$(nproc)" >> $DOCKER_HOME/.profile        
-
-# Compile pagasus5 with MPI
-# https://www.nas.nasa.gov/publications/software/docs/pegasus5/s
-RUN cd $DOCKER_HOME/project/pegasus5 && \
-    ./configure --with-mpif90 && \
-    make && \
-    make CMD=install && \
-    \
-    echo "export PATH=$DOCKER_HOME/bin:\$PATH" >> \
-        $DOCKER_HOME/.profile
-
-# Compile chimera2
-# https://www.nas.nasa.gov/publications/software/docs/chimera/index.html
-RUN cd $DOCKER_HOME/project/chimera2 && \
-    ./configure --with-fort=gfortran --with-cc=gcc && \
-    make && \
-    make CMD=install && \
-    make clean && \
-    \
-    echo "export PATH=$DOCKER_HOME/project/chimera2/bin$MAKE_SUF:\$PATH" >> \
-        $DOCKER_HOME/.profile
-
-# Compile plot3d; Do not enable CGNS
-RUN cd $DOCKER_HOME/project/plot3d4 && \
-    ./configure && \
-    make && \
-    make clean && \
-    \
-    echo "export PATH=$DOCKER_HOME/project/plot3d4/bin:\$PATH" >> \
-        $DOCKER_HOME/.profile
-
 WORKDIR $DOCKER_HOME
+
+RUN sudo chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME/pycht && \
+    cd $DOCKER_HOME/pycht && \
+    ./build.sh && \
+    \
+    echo "export PATH=$DOCKER_HOME/pycht/bin:\$PATH:." >> $DOCKER_HOME/.profile && \
+    echo "export PYTHONPATH=$DOCKER_HOME/pycht/lib/python3.6/site-packages" >> $DOCKER_HOME/.profile
+
 USER root
