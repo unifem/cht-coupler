@@ -13,9 +13,11 @@ WORKDIR /tmp
 ADD image/home $DOCKER_HOME
 ADD image/bin /tmp
 
-# Install system packages and jupyter-notebook.
+# Install system packages, OpenFOAM and jupyter-notebook.
 # Use fix_ompi_dlopen.sh to fix dlopen issue with OpenMPI v2.x
-RUN apt-get update && \
+RUN sh -c "curl -s http://dl.openfoam.org/gpg.key | apt-key add -" && \
+    add-apt-repository http://dl.openfoam.org/ubuntu && \
+    apt-get update && \
     apt-get install -y --no-install-recommends \
         build-essential gfortran clang strace \
         cmake wget \
@@ -50,7 +52,10 @@ RUN apt-get update && \
         ttf-dejavu \
         tk-dev \
         libglu1-mesa-dev \
-        libxmu-dev && \
+        libxmu-dev \
+        \
+        openfoam5 \
+        paraviewopenfoam54 && \
     apt-get clean && \
     \
     \
@@ -104,6 +109,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
     \
     touch $DOCKER_HOME/.log/jupyter.log && \
+    echo "source /opt/openfoam5/etc/bashrc" >> $DOCKER_HOME/.profile && \
     chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
