@@ -21,7 +21,7 @@ COPY --from=intermediate /tmp/pycht $DOCKER_HOME/pycht
 USER $DOCKER_USER
 WORKDIR $DOCKER_HOME
 
-RUN sudo chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME/pycht && \
+RUN sudo chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME && \
     cd $DOCKER_HOME/pycht && \
     ./build.sh && \
     \
