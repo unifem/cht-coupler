@@ -23,7 +23,7 @@ WORKDIR $DOCKER_HOME
 
 RUN sudo chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME && \
     cd $DOCKER_HOME/pycht && \
-    ./build.sh && \
+    ./build.sh mapper pycpl pycss pyccx pyofm pyovf && \
     \
     echo "export PATH=$DOCKER_HOME/pycht/bin:\$PATH:." >> $DOCKER_HOME/.profile && \
     echo "export PYTHONPATH=$DOCKER_HOME/pycht/lib/python3.6/site-packages" >> $DOCKER_HOME/.profile
