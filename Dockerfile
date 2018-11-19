@@ -1,4 +1,4 @@
-# Builds a Docker image for PyCHT
+# Builds a Docker image for PyCHT without OVERFLOW
 
 # First, create an intermediate image to checkout git repository
 FROM unifem/cht-coupler:base as intermediate
@@ -9,7 +9,8 @@ WORKDIR /tmp
 # Checkout libcalculix and pyccx
 COPY ssh /root/.ssh
 RUN git clone --recurse-submodules --depth=1 \
-    git@bitbucket.org:paralabc/pycht.git pycht
+    git@bitbucket.org:paralabc/pycht.git pycht && \
+    rm -rf pycht/solvers/pyovf/overflow
 
 # Perform a second-stage by copying from the intermediate image
 FROM unifem/cht-coupler:base
@@ -23,7 +24,7 @@ WORKDIR $DOCKER_HOME
 
 RUN sudo chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME && \
     cd $DOCKER_HOME/pycht && \
-    ./build.sh mapper pycpl pycss pyccx pyofm pyovf && \
+    ./build.sh mapper pycpl pycss pyccx pyofm && \
     \
     echo "export PATH=$DOCKER_HOME/pycht/bin:\$PATH:." >> $DOCKER_HOME/.profile && \
     echo "export PYTHONPATH=$DOCKER_HOME/pycht/lib/python3.6/site-packages" >> $DOCKER_HOME/.profile
