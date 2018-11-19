@@ -10,7 +10,8 @@ WORKDIR /tmp
 COPY ssh /root/.ssh
 RUN git clone --recurse-submodules --depth=1 \
     git@bitbucket.org:paralabc/pycht.git pycht && \
-    rm -rf pycht/solvers/pyovf/overflow
+    rm -rf pycht/solvers/pyovf/overflow \
+           pycht/.git/modules/solvers/pyovf/modules/overflow
 
 # Perform a second-stage by copying from the intermediate image
 FROM unifem/cht-coupler:base
