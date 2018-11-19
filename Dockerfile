@@ -109,6 +109,7 @@ RUN sh -c "curl -s http://dl.openfoam.org/gpg.key | apt-key add -" && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
     \
     touch $DOCKER_HOME/.log/jupyter.log && \
+    echo "ulimit -s unlimited" >> $DOCKER_HOME/.profile && \
     chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
