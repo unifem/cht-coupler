@@ -1,5 +1,5 @@
-# Builds a Docker image with OpenMPI v2.1, Python3 and Jupyter Notebook.
-# OpenMPI is patched to work with dlopen.
+# Builds a Docker image with OpenMPI v2.1, OpenFOAM, Python3 and
+# Jupyter Notebook. OpenMPI is patched to work with dlopen.
 #
 # Authors:
 # Xiangmin Jiao <xmjiao@gmail.com>
@@ -13,7 +13,7 @@ WORKDIR /tmp
 ADD image/home $DOCKER_HOME
 ADD image/bin /tmp
 
-# Install system packages, OpenFOAM and jupyter-notebook.
+# Install system packages, OpenFOAM and Jupyter Notebook.
 # Use fix_ompi_dlopen.sh to fix dlopen issue with OpenMPI v2.x
 RUN sh -c "curl -s http://dl.openfoam.org/gpg.key | apt-key add -" && \
     add-apt-repository http://dl.openfoam.org/ubuntu && \
@@ -57,7 +57,6 @@ RUN sh -c "curl -s http://dl.openfoam.org/gpg.key | apt-key add -" && \
         openfoam5 \
         paraviewopenfoam54 && \
     apt-get clean && \
-    \
     \
     /tmp/fix_ompi_dlopen.sh && \
     \
@@ -109,8 +108,12 @@ RUN sh -c "curl -s http://dl.openfoam.org/gpg.key | apt-key add -" && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
     \
     touch $DOCKER_HOME/.log/jupyter.log && \
-    echo "ulimit -s unlimited" >> $DOCKER_HOME/.profile && \
-    echo "export OMP_STACKSIZE=16M" >> $DOCKER_HOME/.profile && \
+    echo 'ulimit -s unlimited' >> $DOCKER_HOME/.profile && \
+    echo 'export OMP_STACKSIZE=16M' >> $DOCKER_HOME/.profile && \
+    echo 'export OPENFOAM_ROOT=/opt/openfoam5/platforms/linux64GccDPInt32Opt' >> $DOCKER_HOME/.profile && \
+    echo 'export LD_LIBRARY_PATH=$OPENFOAM_ROOT/lib:$OPENFOAM_ROOT/lib/openmpi-system:$LD_LIBRARY_PATH' >> $DOCKER_HOME/.profile && \
+    echo 'export PATH=/opt/paraviewopenfoam54/bin:$PATH' >> $DOCKER_HOME/.profile && \
+    \
     chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
