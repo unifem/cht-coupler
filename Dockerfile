@@ -28,6 +28,7 @@ RUN sudo chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME && \
     ./build.sh mapper pycpl pycss pyccx pyofm && \
     \
     echo "export PATH=$DOCKER_HOME/pycht/bin:\$PATH:." >> $DOCKER_HOME/.profile && \
+    echo "export LD_LIBRARY_PATH=$DOCKER_HOME/pycht/lib:\$LD_LIBRARY_PATH" >> $DOCKER_HOME/.profile && \
     echo "export PYTHONPATH=$DOCKER_HOME/pycht/lib/python3.6/site-packages" >> $DOCKER_HOME/.profile
 
 USER root
