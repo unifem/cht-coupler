@@ -77,6 +77,7 @@ RUN sh -c "curl -s http://dl.openfoam.org/gpg.key | apt-key add -" && \
           breathe \
           cython \
           \
+          yapf \
           autopep8 \
           flake8 \
           pylint \
@@ -97,6 +98,11 @@ RUN sh -c "curl -s http://dl.openfoam.org/gpg.key | apt-key add -" && \
          widgetsnbextension && \
     jupyter nbextension enable --py --system \
          widgetsnbextension && \
+    \
+    jupyter nbextension install --system \
+        https://github.com/jfbercher/code_prettify/archive/master.zip && \
+    jupyter nbextension enable --system code_prettify-master/code_prettify && \
+    \
     jupyter-nbextension install --py --system \
         latex_envs && \
     jupyter-nbextension enable --py --system \
