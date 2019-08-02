@@ -1,5 +1,5 @@
-# Builds a Docker image with OpenMPI v2.1, OpenFOAM, Python3 and
-# Jupyter Notebook. OpenMPI is patched to work with dlopen.
+# Builds a Docker image with OpenMPI v2.1, OpenFOAM, Python3 and Jupyter 
+# Notebook. System installation of OpenMPI is patched to work with dlopen.
 #
 # Authors:
 # Xiangmin Jiao <xmjiao@gmail.com>
@@ -10,6 +10,8 @@ LABEL maintainer "Xiangmin Jiao <xmjiao@gmail.com>"
 USER root
 WORKDIR /tmp
 
+ENV OPENMPI_VERSION=2.1.1
+ENV MPI_HOME=/opt/openmpi/${OPENMPI_VERSION}
 ADD image/home $DOCKER_HOME
 ADD image/bin /tmp
 
@@ -39,6 +41,7 @@ RUN sh -c "curl -s http://dl.openfoam.org/gpg.key | apt-key add -" && \
         automake autogen autoconf libtool \
         patchelf \
         openmpi-bin libopenmpi-dev \
+        libibverbs-dev ibverbs-utils \
         libhdf5-100 libhdf5-dev hdf5-tools \
         libnetcdf-dev netcdf-bin \
         libmetis5 libmetis-dev \
@@ -49,20 +52,30 @@ RUN sh -c "curl -s http://dl.openfoam.org/gpg.key | apt-key add -" && \
         python3-mpi4py \
         python3-h5py \
         swig swig3.0 \
+        libjpeg8 \
+        libjpeg62 \
         ttf-dejavu \
         tk-dev \
         libglu1-mesa-dev \
         libxmu-dev \
         \
+        gmsh \
         openfoam5 \
         paraviewopenfoam54 && \
     apt-get clean && \
     \
     /tmp/fix_ompi_dlopen.sh && \
+    curl https://download.open-mpi.org/release/open-mpi/v2.1/openmpi-$OPENMPI_VERSION.tar.bz2 | tar xjvf - && \
+    cd openmpi-$OPENMPI_VERSION && \
+    ./configure --prefix=/opt/openmpi/${OPENMPI_VERSION} --enable-orterun-prefix-by-default --enable-mpirun-prefix-by-default --enable-static --enable-shared --with-verbs && \
+    make -j2 && make install && \
     \
     mkdir -p /usr/lib/hdf5-serial && \
     ln -s -f /usr/include/hdf5/serial /usr/lib/hdf5-serial/include && \
     ln -s -f /usr/lib/x86_64-linux-gnu/hdf5/serial /usr/lib/hdf5-serial/lib && \
+    ln -s -f /lib/x86_64-linux-gnu/ld-2.27.so /lib64/ld-linux-x86-64.so.2 && \
+    ln -s -f /lib/x86_64-linux-gnu/ld-2.27.so /lib64/ld-lsb-x86-64.so.3 && \
+    ln -s -f /lib/x86_64-linux-gnu/ld-2.27.so /lib64/ld-lsb-x86-64.so && \
     \
     curl -O https://bootstrap.pypa.io/get-pip.py && \
     python3 get-pip.py && \
@@ -76,6 +89,7 @@ RUN sh -c "curl -s http://dl.openfoam.org/gpg.key | apt-key add -" && \
           sphinx \
           breathe \
           cython \
+          f90nml \
           \
           yapf \
           autopep8 \
@@ -118,7 +132,7 @@ RUN sh -c "curl -s http://dl.openfoam.org/gpg.key | apt-key add -" && \
     echo 'export OMP_STACKSIZE=16M' >> $DOCKER_HOME/.profile && \
     echo 'export OPENFOAM_ROOT=/opt/openfoam5/platforms/linux64GccDPInt32Opt' >> $DOCKER_HOME/.profile && \
     echo 'export LD_LIBRARY_PATH=$OPENFOAM_ROOT/lib:$OPENFOAM_ROOT/lib/openmpi-system:$LD_LIBRARY_PATH' >> $DOCKER_HOME/.profile && \
-    echo 'export PATH=/opt/paraviewopenfoam54/bin:$PATH' >> $DOCKER_HOME/.profile && \
+    echo 'export PATH=\$MPI_HOME/bin:/opt/paraviewopenfoam54/bin:\$PATH' >> $DOCKER_HOME/.profile && \
     \
     chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
