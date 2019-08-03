@@ -25,7 +25,7 @@ WORKDIR $DOCKER_HOME
 
 RUN sudo chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME && \
     cd $DOCKER_HOME/pycht && \
-    ./build.sh mapper pycpl pycss pyccx pyofm && \
+    ./pycht build mapper pycpl pycss pyccx pyofm && \
     \
     echo "export PATH=$DOCKER_HOME/pycht/bin:\$PATH:." >> $DOCKER_HOME/.profile && \
     echo "export LD_LIBRARY_PATH=$DOCKER_HOME/pycht/lib:\$LD_LIBRARY_PATH" >> $DOCKER_HOME/.profile && \
