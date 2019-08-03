@@ -26,6 +26,6 @@ WORKDIR $DOCKER_HOME
 
 RUN sudo chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME && \
     cd $DOCKER_HOME/pycht && \
-    ./build.sh pyovf
+    WM_PROJECT=OpenFOAM ./pycht build pyovf
 
 USER root
