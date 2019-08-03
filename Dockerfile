@@ -25,6 +25,7 @@ WORKDIR $DOCKER_HOME
 
 RUN sudo chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME && \
     cd $DOCKER_HOME/pycht && \
+    source /opt/openfoam5/etc/bashrc && \
     ./pycht build mapper pycpl pycss pyccx pyofm && \
     \
     echo "export PATH=$DOCKER_HOME/pycht/bin:\$PATH:." >> $DOCKER_HOME/.profile && \
